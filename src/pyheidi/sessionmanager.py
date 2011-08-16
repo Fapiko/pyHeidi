@@ -68,9 +68,15 @@ class SessionManager(QtGui.QDialog):
 		layoutH3.setStretch(0, 30)
 		layoutH3.setStretch(1, 70)
 		
+		# Setup signals
+		QtCore.QObject.connect(buttonNew, QtCore.SIGNAL('clicked()'), self.slotButtonOpenClicked)
+		
 		self.setLayout(layoutH3)
 			
 		self.setWindowTitle('Session manager')
 		self.setWindowIcon(QtGui.QIcon('resources/icons/heidi.ico'))
 		self.setModal(True)
 		self.setGeometry(300, 300, 700, 400)
+		
+	def slotButtonOpenClicked(self):
+		print "facepalm"
