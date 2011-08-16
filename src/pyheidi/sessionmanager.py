@@ -1,5 +1,6 @@
 import sys
 from PyQt4 import QtGui, QtCore
+from sqlite3 import *
 
 class SessionManager(QtGui.QDialog):
 	def __init__(self):
@@ -41,7 +42,7 @@ class SessionManager(QtGui.QDialog):
 		self.treeServerManager.header().close()
 		self.treeServerManager.setRootIsDecorated(False)
 		self.treeServerManager.itemChanged.connect(self.slotNewServerChanged)
-		self.treeServerManager.itemSelectionChanged.connect(self.slotServerSelectionChanged)
+		#self.treeServerManager.itemSelectionChanged.connect(self.slotServerSelectionChanged)
 		
 		# Layout for password text field and password check box
 		layoutH6 = QtGui.QHBoxLayout()
@@ -71,18 +72,18 @@ class SessionManager(QtGui.QDialog):
 		
 		# Create the buttons
 		buttonNew = QtGui.QPushButton('New')
-		buttonSave = QtGui.QPushButton('Save')
-		buttonSave.setDisabled(True)
+		self.buttonSave = QtGui.QPushButton('Save')
+		self.buttonSave.setDisabled(True)
 		self.buttonDelete = QtGui.QPushButton('Delete')
 		self.buttonDelete.setDisabled(True)
-		buttonOpen = QtGui.QPushButton('Open')
-		buttonOpen.setDisabled(True)
+		self.buttonOpen = QtGui.QPushButton('Open')
+		self.buttonOpen.setDisabled(True)
 		buttonCancel = QtGui.QPushButton('Cancel')
 		
 		# Layout for buttons at bottom of session manager
 		layoutH4 = QtGui.QHBoxLayout()
 		layoutH4.addWidget(buttonNew)
-		layoutH4.addWidget(buttonSave)
+		layoutH4.addWidget(self.buttonSave)
 		layoutH4.addWidget(self.buttonDelete)
 		
 		# Layout for session manager pane
@@ -94,9 +95,10 @@ class SessionManager(QtGui.QDialog):
 		layoutH1 = QtGui.QHBoxLayout()
 		layoutH1.addLayout(layoutV1)
 		
+		# Layout for the open/cancel buttons under the tab widget
 		layoutH5 = QtGui.QHBoxLayout()
 		layoutH5.addStretch(1);
-		layoutH5.addWidget(buttonOpen)
+		layoutH5.addWidget(self.buttonOpen)
 		layoutH5.addWidget(buttonCancel)
 		
 		self.layoutV2 = QtGui.QVBoxLayout()
@@ -106,17 +108,19 @@ class SessionManager(QtGui.QDialog):
 		self.layoutV2.addStretch(1)
 		self.layoutV2.addLayout(layoutH5)
 		
+		# Layout to separate the session manager and tab widget panes
 		layoutH3 = QtGui.QHBoxLayout(self)
 		layoutH3.addLayout(layoutH1)
 		layoutH3.addLayout(self.layoutV2)
-		
 		layoutH3.setStretch(0, 30)
 		layoutH3.setStretch(1, 70)
 		
 		# Setup signals
-		QtCore.QObject.connect(buttonNew, QtCore.SIGNAL('clicked()'), self.slotButtonNewClicked)
-		QtCore.QObject.connect(buttonCancel, QtCore.SIGNAL('clicked()'), self.slotButtonCancelClicked)
+		buttonNew.clicked.connect(self.slotButtonNewClicked)
+		buttonCancel.clicked.connect(self.slotButtonCancelClicked)
 		self.buttonDelete.clicked.connect(self.slotButtonDeleteClicked)
+		self.buttonOpen.clicked.connect(self.slotButtonOpenClicked)
+		self.buttonSave.clicked.connect(self.slotButtonSaveClicked)
 		
 		self.setLayout(layoutH3)
 			
@@ -133,6 +137,7 @@ class SessionManager(QtGui.QDialog):
 		newServer.setFlags(QtCore.Qt.ItemIsEditable|QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable)
 		
 		self.treeServerManager.addTopLevelItem(newServer)
+		self.treeServerManager.setCurrentItem(newServer)
 		
 	def slotButtonCancelClicked(self):
 		sys.exit(0)
@@ -147,19 +152,22 @@ class SessionManager(QtGui.QDialog):
 				break
 				
 		if numServers == 1:
-			self.buttonDelete.setEnabled(False)
 			self.toggleSettingsPane()
 		
 	def slotButtonNewClicked(self):
 		self.addNewServer()
 		self.toggleSettingsPane()
 		
+	def slotButtonSaveClicked(self):
+		conn = connect('userdata.db')
+		curs = conn.cursor()
+		
 	def slotNewServerChanged(self, item, column):
 		print(item.text(0))
 		
-	def slotServerSelectionChanged(self):
-		self.buttonDelete.setEnabled(True)
-		
+	def slotButtonOpenClicked(self):
+		print('open')
+		 
 	def toggleSettingsPane(self):
 		if self.treeServerManager.topLevelItemCount() > 0:
 			# Toggle settings window on
@@ -170,6 +178,9 @@ class SessionManager(QtGui.QDialog):
 			self.layoutV2.insertWidget(0, self.tabWidget)
 			self.layoutV2.setStretch(1, 1)
 			self.tabWidget.setVisible(True)
+			self.buttonDelete.setEnabled(True)
+			self.buttonOpen.setEnabled(True)
+			self.buttonSave.setEnabled(True)
 		else:
 			# Toggle settings window off and show the no sessions message
 			self.labelNoSession.setVisible(True)
@@ -178,4 +189,6 @@ class SessionManager(QtGui.QDialog):
 			self.layoutV2.insertWidget(1, self.labelNoSession)
 			self.layoutV2.insertStretch(2, 1)
 			self.tabWidget.setVisible(False)
-		
+			self.buttonDelete.setEnabled(False)
+			self.buttonOpen.setEnabled(False)
+			self.buttonSave.setEnabled(False)
