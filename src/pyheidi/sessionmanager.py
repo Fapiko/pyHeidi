@@ -39,6 +39,7 @@ class SessionManager(QtGui.QDialog):
 		# Create the Server Manager tree
 		self.treeServerManager = QtGui.QTreeWidget(self)
 		self.treeServerManager.header().close()
+		self.treeServerManager.setRootIsDecorated(False)
 		self.treeServerManager.itemChanged.connect(self.slotNewServerChanged)
 		self.treeServerManager.itemSelectionChanged.connect(self.slotServerSelectionChanged)
 		
@@ -124,6 +125,15 @@ class SessionManager(QtGui.QDialog):
 		self.setModal(True)
 		self.setGeometry(300, 300, 700, 400)
 		
+	def addNewServer(self):
+		# Add new server to tree view
+		newServer = QtGui.QTreeWidgetItem()
+		newServer.setText(0, 'Unnamed')
+		newServer.setIcon(0, QtGui.QIcon('resources/icons/server_add.png'))
+		newServer.setFlags(QtCore.Qt.ItemIsEditable|QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable)
+		
+		self.treeServerManager.addTopLevelItem(newServer)
+		
 	def slotButtonCancelClicked(self):
 		sys.exit(0)
 		
@@ -138,29 +148,34 @@ class SessionManager(QtGui.QDialog):
 				
 		if numServers == 1:
 			self.buttonDelete.setEnabled(False)
+			self.toggleSettingsPane()
 		
 	def slotButtonNewClicked(self):
-		# Add new server to tree view
-		newServer = QtGui.QTreeWidgetItem()
-		newServer.setText(0, 'Unnamed')
-		newServer.setIcon(0, QtGui.QIcon('resources/icons/server_add.png'))
-		newServer.setFlags(QtCore.Qt.ItemIsEditable|QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable)
-		
-		self.treeServerManager.setRootIsDecorated(False)
-		self.treeServerManager.addTopLevelItem(newServer)
-		
-		# Toggle settings window on
-		self.labelNoSession.setVisible(False)
-		self.layoutV2.removeWidget(self.labelNoSession)
-		self.layoutV2.insertWidget(1, self.tabWidget)
-		self.layoutV2.removeItem(self.layoutV2.itemAt(0))
-		self.layoutV2.removeItem(self.layoutV2.itemAt(1))
-		self.layoutV2.setStretch(1, 1)
-		self.tabWidget.setVisible(True)
+		self.addNewServer()
+		self.toggleSettingsPane()
 		
 	def slotNewServerChanged(self, item, column):
 		print(item.text(0))
 		
 	def slotServerSelectionChanged(self):
-		self.buttonDelete.setEnabled(True)	
+		self.buttonDelete.setEnabled(True)
+		
+	def toggleSettingsPane(self):
+		if self.treeServerManager.topLevelItemCount() > 0:
+			# Toggle settings window on
+			self.labelNoSession.setVisible(False)
+			self.layoutV2.removeItem(self.layoutV2.itemAt(0))
+			self.layoutV2.removeItem(self.layoutV2.itemAt(1))
+			self.layoutV2.removeWidget(self.labelNoSession)
+			self.layoutV2.insertWidget(0, self.tabWidget)
+			self.layoutV2.setStretch(1, 1)
+			self.tabWidget.setVisible(True)
+		else:
+			# Toggle settings window off and show the no sessions message
+			self.labelNoSession.setVisible(True)
+			self.layoutV2.removeWidget(self.tabWidget)
+			self.layoutV2.insertSpacing(0, 17)
+			self.layoutV2.insertWidget(1, self.labelNoSession)
+			self.layoutV2.insertStretch(2, 1)
+			self.tabWidget.setVisible(False)
 		
