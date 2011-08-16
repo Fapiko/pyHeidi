@@ -1,6 +1,6 @@
 import sys
 from sessionmanager import SessionManager
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui
 
 if __name__ == '__main__':
 	app = QtGui.QApplication(sys.argv)

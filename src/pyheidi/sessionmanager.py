@@ -39,6 +39,8 @@ class SessionManager(QtGui.QDialog):
 		# Create the Server Manager tree
 		self.treeServerManager = QtGui.QTreeWidget(self)
 		self.treeServerManager.header().close()
+		self.treeServerManager.itemChanged.connect(self.slotNewServerChanged)
+		self.treeServerManager.itemSelectionChanged.connect(self.slotServerSelectionChanged)
 		
 		# Layout for password text field and password check box
 		layoutH6 = QtGui.QHBoxLayout()
@@ -70,8 +72,8 @@ class SessionManager(QtGui.QDialog):
 		buttonNew = QtGui.QPushButton('New')
 		buttonSave = QtGui.QPushButton('Save')
 		buttonSave.setDisabled(True)
-		buttonDelete = QtGui.QPushButton('Delete')
-		buttonDelete.setDisabled(True)
+		self.buttonDelete = QtGui.QPushButton('Delete')
+		self.buttonDelete.setDisabled(True)
 		buttonOpen = QtGui.QPushButton('Open')
 		buttonOpen.setDisabled(True)
 		buttonCancel = QtGui.QPushButton('Cancel')
@@ -80,7 +82,7 @@ class SessionManager(QtGui.QDialog):
 		layoutH4 = QtGui.QHBoxLayout()
 		layoutH4.addWidget(buttonNew)
 		layoutH4.addWidget(buttonSave)
-		layoutH4.addWidget(buttonDelete)
+		layoutH4.addWidget(self.buttonDelete)
 		
 		# Layout for session manager pane
 		layoutV1 = QtGui.QVBoxLayout()
@@ -113,6 +115,7 @@ class SessionManager(QtGui.QDialog):
 		# Setup signals
 		QtCore.QObject.connect(buttonNew, QtCore.SIGNAL('clicked()'), self.slotButtonNewClicked)
 		QtCore.QObject.connect(buttonCancel, QtCore.SIGNAL('clicked()'), self.slotButtonCancelClicked)
+		self.buttonDelete.clicked.connect(self.slotButtonDeleteClicked)
 		
 		self.setLayout(layoutH3)
 			
@@ -124,16 +127,27 @@ class SessionManager(QtGui.QDialog):
 	def slotButtonCancelClicked(self):
 		sys.exit(0)
 		
+	def slotButtonDeleteClicked(self):
+		currentServer = self.treeServerManager.currentItem()
+		numServers = self.treeServerManager.topLevelItemCount()
+		
+		for i in range(0, numServers):
+			if self.treeServerManager.topLevelItem(i) == currentServer:
+				self.treeServerManager.takeTopLevelItem(i)
+				break
+				
+		if numServers == 1:
+			self.buttonDelete.setEnabled(False)
+		
 	def slotButtonNewClicked(self):
 		# Add new server to tree view
 		newServer = QtGui.QTreeWidgetItem()
 		newServer.setText(0, 'Unnamed')
 		newServer.setIcon(0, QtGui.QIcon('resources/icons/server_add.png'))
-		newServer.setFlags(QtCore.Qt.ItemIsEditable|QtCore.Qt.ItemIsEnabled)
+		newServer.setFlags(QtCore.Qt.ItemIsEditable|QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable)
 		
 		self.treeServerManager.setRootIsDecorated(False)
 		self.treeServerManager.addTopLevelItem(newServer)
-		self.treeServerManager.itemChanged.connect(self.slotNewServerChanged)
 		
 		# Toggle settings window on
 		self.labelNoSession.setVisible(False)
@@ -146,3 +160,7 @@ class SessionManager(QtGui.QDialog):
 		
 	def slotNewServerChanged(self, item, column):
 		print(item.text(0))
+		
+	def slotServerSelectionChanged(self):
+		self.buttonDelete.setEnabled(True)	
+		
