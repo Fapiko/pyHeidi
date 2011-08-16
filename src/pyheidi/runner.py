@@ -1,0 +1,11 @@
+import sys
+
+from sessionmanager import SessionManager
+
+from PyQt4 import QtGui, QtCore
+
+if __name__ == '__main__':
+	app = QtGui.QApplication(sys.argv)
+	sessionManager = SessionManager()
+	sessionManager.show()
+	app.exec_()
