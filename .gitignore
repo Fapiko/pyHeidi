@@ -1,0 +1,3 @@
+.gitignore
+nbproject
+src/pyheidi/__pycache__
