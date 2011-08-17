@@ -8,9 +8,6 @@ class SessionManager(QtGui.QDialog):
 		self.initUI()
 			
 	def initUI(self):
-		comboNetworkType = QtGui.QComboBox(self)
-		comboNetworkType.addItem('TCP/IP')
-		
 		# No session label... TODO: should really move this text to resource file
 		self.labelNoSession = QtGui.QLabel('New here? In order to connect to a MySQL server, you have to create a so called "session" at first. Just click the "New" button on the bottom left to create your first session.\n\nGive it a friendly name (e.g. "Local DB Server") so you\'ll recall it the next time you start HeidiSQL.')
 		self.labelNoSession.setWordWrap(True)
@@ -24,18 +21,20 @@ class SessionManager(QtGui.QDialog):
 		comboDatabases.setEditable(True)
 		comboDatabases.setEditText('Separated by semicolon')
 		comboDatabases.setDisabled(True)
-		spinPort = QtGui.QSpinBox()
-		spinPort.setRange(0, 65535)
-		spinPort.setMinimumWidth(65)
-		spinPort.setValue(3306)
-		textHostname = QtGui.QLineEdit()
-		textHostname.setText('127.0.0.1')
-		textPassword = QtGui.QLineEdit()
-		textPassword.setEchoMode(QtGui.QLineEdit.Password)
+		self.comboNetworkType = QtGui.QComboBox(self)
+		self.comboNetworkType.addItem('TCP/IP')
+		self.spinPort = QtGui.QSpinBox()
+		self.spinPort.setRange(0, 65535)
+		self.spinPort.setMinimumWidth(65)
+		self.spinPort.setValue(3306)
+		self.textHostname = QtGui.QLineEdit()
+		self.textHostname.setText('127.0.0.1')
+		self.textPassword = QtGui.QLineEdit()
+		self.textPassword.setEchoMode(QtGui.QLineEdit.Password)
 		textStartupScript = QtGui.QLineEdit()
 		textStartupScript.setDisabled(True)
-		textUser = QtGui.QLineEdit()
-		textUser.setText('root')
+		self.textUser = QtGui.QLineEdit()
+		self.textUser.setText('root')
 		
 		# Create the Server Manager tree
 		self.treeServerManager = QtGui.QTreeWidget(self)
@@ -46,28 +45,28 @@ class SessionManager(QtGui.QDialog):
 		
 		# Layout for password text field and password check box
 		layoutH6 = QtGui.QHBoxLayout()
-		layoutH6.addWidget(textPassword)
+		layoutH6.addWidget(self.textPassword)
 		layoutH6.addWidget(checkPasswordPrompt)
 		
 		# Layout to smallimize the port input field
 		layoutH7 = QtGui.QHBoxLayout()
-		layoutH7.addWidget(spinPort)
+		layoutH7.addWidget(self.spinPort)
 		layoutH7.addStretch(1)
 		
 		# Setup the tab widget
 		self.tabWidget = QtGui.QTabWidget(self)
 		tabSettings = QtGui.QWidget()
 		tabSettings.tabSettingsLayout = QtGui.QFormLayout(tabSettings)
-		tabSettings.tabSettingsLayout.addRow('Network type:', comboNetworkType)
-		tabSettings.tabSettingsLayout.addRow('Hostname / IP:', textHostname)
-		tabSettings.tabSettingsLayout.addRow('User:', textUser)
+		tabSettings.tabSettingsLayout.addRow('Network type:', self.comboNetworkType)
+		tabSettings.tabSettingsLayout.addRow('Hostname / IP:', self.textHostname)
+		tabSettings.tabSettingsLayout.addRow('User:', self.textUser)
 		tabSettings.tabSettingsLayout.addRow('Password:', layoutH6)
 		tabSettings.tabSettingsLayout.addRow('Port:', layoutH7)
 		tabSettings.tabSettingsLayout.addRow('', checkCompressProtocol)
 		tabSettings.tabSettingsLayout.addRow('Databases:', comboDatabases)
 		tabSettings.tabSettingsLayout.addRow('Startup script:', textStartupScript)
 		
-		self.tabWidget.addTab(tabSettings, QtGui.QIcon("resources/icons/wrench.png"), "Settings")
+		self.tabWidget.addTab(tabSettings, QtGui.QIcon("../resources/icons/wrench.png"), "Settings")
 		self.tabWidget.setVisible(False)
 		
 		# Create the buttons
@@ -125,7 +124,7 @@ class SessionManager(QtGui.QDialog):
 		self.setLayout(layoutH3)
 			
 		self.setWindowTitle('Session manager')
-		self.setWindowIcon(QtGui.QIcon('resources/icons/heidi.ico'))
+		self.setWindowIcon(QtGui.QIcon('../resources/icons/heidi.ico'))
 		self.setModal(True)
 		self.setGeometry(300, 300, 700, 400)
 		
@@ -133,7 +132,7 @@ class SessionManager(QtGui.QDialog):
 		# Add new server to tree view
 		newServer = QtGui.QTreeWidgetItem()
 		newServer.setText(0, 'Unnamed')
-		newServer.setIcon(0, QtGui.QIcon('resources/icons/server_add.png'))
+		newServer.setIcon(0, QtGui.QIcon('../resources/icons/server_add.png'))
 		newServer.setFlags(QtCore.Qt.ItemIsEditable|QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable)
 		
 		self.treeServerManager.addTopLevelItem(newServer)
@@ -159,8 +158,41 @@ class SessionManager(QtGui.QDialog):
 		self.toggleSettingsPane()
 		
 	def slotButtonSaveClicked(self):
-		conn = connect('userdata.db')
+		conn = connect('../userdata.db')
+		conn.row_factory = Row
+		
 		curs = conn.cursor()
+		curs = conn.execute("select name from sqlite_master where type='table' and name = 'sessions'")
+		
+		if curs.fetchone() == None:
+			curs.execute("""
+				CREATE TABLE sessions(
+				   id INTEGER PRIMARY KEY,
+				   name TEXT,
+				   network_type INTEGER,
+				   hostname TEXT,
+				   username TEXT,
+				   password TEXT,
+				   port INTEGER,
+				   compressed BOOL,
+				   startup_script TEXT			
+				);
+			""")
+		
+		curs.execute(
+			"INSERT INTO sessions (name, network_type, hostname, username, password, port) VALUES (?, ?, ?, ?, ?, ?)",
+				[
+					self.treeServerManager.currentItem().text(0),
+					self.comboNetworkType.currentIndex(),
+					self.textHostname.text(),
+					self.textUser.text(),
+					self.textPassword.text(),
+					self.spinPort.value()
+				]
+		)
+		conn.commit()
+		conn.close()
+		
 		
 	def slotNewServerChanged(self, item, column):
 		print(item.text(0))
