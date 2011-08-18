@@ -1,3 +1,4 @@
 nbproject
 src/pyheidi/__pycache__
+src/setup.py
 src/userdata.db
