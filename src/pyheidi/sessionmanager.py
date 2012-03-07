@@ -171,7 +171,10 @@ class SessionManager(QtGui.QDialog):
 	
 	# Populates the session manager list
 	def loadSessionManager(self):
-		self.curs = self.conn.execute("SELECT id, name FROM sessions");
+		try:
+			self.curs = self.conn.execute("SELECT id, name FROM sessions")
+		except OperationalError:
+			self.createSessionsTable()
 		
 		for row in self.curs:
 			newServer = QtGui.QTreeWidgetItem()
@@ -257,19 +260,7 @@ class SessionManager(QtGui.QDialog):
 			self.curs = self.conn.execute("SELECT name FROM sqlite_master WHERE Type='table' and name = 'sessions'")
 
 			if self.curs.fetchone() == None:
-				self.curs.execute("""
-					CREATE TABLE sessions(
-					   id INTEGER PRIMARY KEY,
-					   name TEXT,
-					   network_type INTEGER,
-					   hostname TEXT,
-					   username TEXT,
-					   password TEXT,
-					   port INTEGER,
-					   compressed BOOL,
-					   startup_script TEXT			
-					);
-				""")
+				self.createSessionsTable()
 
 			self.curs.execute(
 				"INSERT INTO sessions (name, network_type, hostname, username, password, port) VALUES (?, ?, ?, ?, ?, ?)",
@@ -330,3 +321,19 @@ class SessionManager(QtGui.QDialog):
 			self.buttonDelete.setEnabled(False)
 			self.buttonOpen.setEnabled(False)
 			self.buttonSave.setEnabled(False)
+
+
+	def createSessionsTable(self):
+		self.curs.execute("""
+			CREATE TABLE sessions(
+			   id INTEGER PRIMARY KEY,
+			   name TEXT,
+			   network_type INTEGER,
+			   hostname TEXT,
+			   username TEXT,
+			   password TEXT,
+			   port INTEGER,
+			   compressed BOOL,
+			   startup_script TEXT
+			);
+		""")
