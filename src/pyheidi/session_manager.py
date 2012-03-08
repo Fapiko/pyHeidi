@@ -153,10 +153,12 @@ class SessionManager(QtGui.QDialog):
 
 	def loadSettings(self):
 		index = self.treeServerManager.indexOfTopLevelItem(self.treeServerManager.currentItem())
-		
-		self.curs = self.conn.execute("SELECT * FROM sessions WHERE id = ?", [self.sessionIds[index]])
-		settings = self.curs.fetchone()
-		self.currentSessionData = settings
+
+		settings = None
+		if (index != -1):
+			self.curs = self.conn.execute("SELECT * FROM sessions WHERE id = ?", [self.sessionIds[index]])
+			settings = self.curs.fetchone()
+			self.currentSessionData = settings
 		
 		if settings != None:
 			self.textHostname.setText(settings['hostname'])
