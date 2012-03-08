@@ -271,11 +271,11 @@ class SessionManager(QtGui.QDialog):
 			self.curs.execute(
 				"INSERT INTO sessions (name, network_type, hostname, username, password, port) VALUES (?, ?, ?, ?, ?, ?)",
 					[
-						sessionName,
+						self.getStringFromQString(sessionName),
 						self.comboNetworkType.currentIndex(),
-						self.textHostname.text(),
-						self.textUser.text(),
-						self.textPassword.text(),
+						self.getStringFromQString(self.textHostname.text()),
+						self.getStringFromQString(self.textUser.text()),
+						self.getStringFromQString(self.textPassword.text()),
 						self.spinPort.value()
 					]
 			)
@@ -283,11 +283,11 @@ class SessionManager(QtGui.QDialog):
 			self.curs.execute(
 				"UPDATE sessions SET name = ?, network_type = ?, hostname = ?, username = ?, password = ?, port = ? WHERE id = ?",
 					[
-						sessionName,
+						self.getStringFromQString(sessionName),
 						self.comboNetworkType.currentIndex(),
-						self.textHostname.text(),
-						self.textUser.text(),
-						self.textPassword.text(),
+						self.getStringFromQString(self.textHostname.text()),
+						self.getStringFromQString(self.textUser.text()),
+						self.getStringFromQString(self.textPassword.text()),
 						self.spinPort.value(),
 						self.sessionIds[index]
 					]
@@ -346,3 +346,9 @@ class SessionManager(QtGui.QDialog):
 
 	def initializeSessionData(self):
 		self.currentSessionData = {'hostname': '', 'password': '', 'username': '', 'port': ''}
+
+	def getStringFromQString(self, string):
+		"""
+		@type string: QString
+		"""
+		return unicode(string.toUtf8(), "utf-8");
