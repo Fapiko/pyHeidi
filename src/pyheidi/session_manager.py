@@ -11,7 +11,7 @@ class SessionManager(QtGui.QDialog):
 		self.conn.row_factory = Row
 		self.curs = self.conn.cursor()
 		
-		self.currentSessionData = []
+		self.currentSessionData = {}
 		self.sessionIds = []
 		
 		super(SessionManager, self).__init__()
@@ -150,7 +150,7 @@ class SessionManager(QtGui.QDialog):
 		self.sessionIds.append(None)
 		self.treeServerManager.addTopLevelItem(newServer)
 		self.treeServerManager.setCurrentItem(newServer)
-		
+
 	def loadSettings(self):
 		index = self.treeServerManager.indexOfTopLevelItem(self.treeServerManager.currentItem())
 		
@@ -164,6 +164,7 @@ class SessionManager(QtGui.QDialog):
 			self.textPassword.setText(settings['password'])
 			self.spinPort.setValue(settings['port'])
 		else:
+			self.initializeSessionData()
 			self.textHostname.setText('127.0.0.1')
 			self.textPassword.setText('');
 			self.textUser.setText('root')
@@ -195,9 +196,14 @@ class SessionManager(QtGui.QDialog):
 		name = session.text(0)
 		if (name[-2:] == ' *'):
 			name = name[:len(name) - 2]
-		
+
 		# Check to see if session has been reverted back to normal or not to determine if we need to change the name
-		if (self.textHostname.text() != self.currentSessionData['hostname'] or self.textPassword.text() != self.currentSessionData['password'] or self.textUser.text() != self.currentSessionData['username'] or self.spinPort.value() != self.currentSessionData['port']):
+		if (
+			self.textHostname.text() != self.currentSessionData['hostname'] or
+			self.textPassword.text() != self.currentSessionData['password'] or
+			self.textUser.text() != self.currentSessionData['username'] or
+			self.spinPort.value() != self.currentSessionData['port']
+		):
 			changed = True
 		else:
 			changed = False
@@ -337,3 +343,6 @@ class SessionManager(QtGui.QDialog):
 			   startup_script TEXT
 			);
 		""")
+
+	def initializeSessionData(self):
+		self.currentSessionData = {'hostname': '', 'password': '', 'username': '', 'port': ''}
