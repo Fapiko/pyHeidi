@@ -18,137 +18,137 @@
     <normaloff>:/icons/resources/icons/heidi.ico</normaloff>:/icons/resources/icons/heidi.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTreeView" name="treeView">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>20</y>
-      <width>256</width>
-      <height>331</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QTabWidget" name="twMachineTabs">
-    <property name="geometry">
-     <rect>
-      <x>260</x>
-      <y>20</y>
-      <width>521</width>
-      <height>331</height>
-     </rect>
-    </property>
-    <property name="currentIndex">
-     <number>0</number>
-    </property>
-    <widget class="QWidget" name="machineTab">
-     <attribute name="icon">
-      <iconset>
-       <normalon>:/icons/resources/icons/computer.png</normalon>
-      </iconset>
-     </attribute>
-     <attribute name="title">
-      <string>Host: </string>
-     </attribute>
-     <widget class="QTabWidget" name="tabWidget">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>50</y>
-        <width>401</width>
-        <height>251</height>
-       </rect>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QSplitter" name="splitter_2">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
-      <property name="currentIndex">
-       <number>0</number>
+      <property name="handleWidth">
+       <number>1</number>
       </property>
-      <widget class="QWidget" name="hostTabDB">
-       <attribute name="icon">
-        <iconset>
-         <normalon>:/icons/resources/icons/database.png</normalon>
-        </iconset>
-       </attribute>
-       <attribute name="title">
-        <string>Databases (0)</string>
-       </attribute>
-       <widget class="QTableWidget" name="tableWidget">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>30</y>
-          <width>361</width>
-          <height>171</height>
-         </rect>
+      <widget class="QSplitter" name="splitter">
+       <property name="lineWidth">
+        <number>0</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="opaqueResize">
+        <bool>true</bool>
+       </property>
+       <property name="handleWidth">
+        <number>1</number>
+       </property>
+       <property name="childrenCollapsible">
+        <bool>true</bool>
+       </property>
+       <widget class="QTreeView" name="treeView"/>
+       <widget class="QTabWidget" name="twMachineTabs">
+        <property name="tabShape">
+         <enum>QTabWidget::Rounded</enum>
         </property>
-        <column>
-         <property name="text">
-          <string>Database</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Size</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Items</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Last Modification</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Tables</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Views</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Functions</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Procedures</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Triggers</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Events</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Default Collation</string>
-         </property>
-        </column>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="machineTab">
+         <attribute name="icon">
+          <iconset>
+           <normalon>:/icons/resources/icons/computer.png</normalon>
+          </iconset>
+         </attribute>
+         <attribute name="title">
+          <string>Host: </string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QTabWidget" name="tabWidget">
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <widget class="QWidget" name="hostTabDB">
+             <attribute name="icon">
+              <iconset>
+               <normalon>:/icons/resources/icons/database.png</normalon>
+              </iconset>
+             </attribute>
+             <attribute name="title">
+              <string>Databases (0)</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <item>
+               <widget class="QTableWidget" name="tableWidget">
+                <column>
+                 <property name="text">
+                  <string>Database</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Size</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Items</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Last Modification</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Tables</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Views</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Functions</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Procedures</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Triggers</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Events</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Default Collation</string>
+                 </property>
+                </column>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+         <zorder>tabWidget</zorder>
+         <zorder>treeView</zorder>
+        </widget>
        </widget>
       </widget>
+      <widget class="QTextEdit" name="txtStatus"/>
      </widget>
-    </widget>
-   </widget>
-   <widget class="QTextEdit" name="txtStatus">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>360</y>
-      <width>781</width>
-      <height>171</height>
-     </rect>
-    </property>
-   </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
