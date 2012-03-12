@@ -4,9 +4,14 @@ from PyQt4 import QtGui, QtCore
 from sqlite3 import *
 
 class SessionManager(QtGui.QDialog):
-	def __init__(self):
+	def __init__(self, mainApp):
+		"""
+		@type mainApp: MainApplicationWindow
+		"""
+		self.mainApp = mainApp
+
 		atexit.register(self.shutdownEvent)
-		
+
 		self.conn = connect('../userdata.db')
 		self.conn.row_factory = Row
 		self.curs = self.conn.cursor()
@@ -252,6 +257,9 @@ class SessionManager(QtGui.QDialog):
 		
 	def slotButtonOpenClicked(self):
 		print('open')
+		self.close()
+		self.mainApp.log("/* Open sesame */")
+		self.mainApp.show()
 		
 		
 	def slotButtonSaveClicked(self):

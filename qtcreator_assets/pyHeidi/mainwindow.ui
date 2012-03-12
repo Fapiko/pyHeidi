@@ -20,14 +20,14 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QSplitter" name="splitter_2">
+     <widget class="QSplitter" name="spltHorizontal1">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
       <property name="handleWidth">
        <number>1</number>
       </property>
-      <widget class="QSplitter" name="splitter">
+      <widget class="QSplitter" name="spltVertical1">
        <property name="lineWidth">
         <number>0</number>
        </property>
@@ -140,12 +140,19 @@
            </widget>
           </item>
          </layout>
-         <zorder>tabWidget</zorder>
-         <zorder>treeView</zorder>
         </widget>
        </widget>
       </widget>
-      <widget class="QTextEdit" name="txtStatus"/>
+      <widget class="QTextEdit" name="txtStatus">
+       <property name="font">
+        <font>
+         <family>Ubuntu Mono</family>
+        </font>
+       </property>
+       <property name="readOnly">
+        <bool>false</bool>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>
