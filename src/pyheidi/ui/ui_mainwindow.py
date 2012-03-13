@@ -2,12 +2,13 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Sun Mar 11 20:31:46 2012
+# Created: Mon Mar 12 23:33:52 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
+from custom_widgets.text_edit_line_number.text_edit_line_number import QTextEditLineNumber
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -85,7 +86,7 @@ class Ui_MainWindow(object):
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/resources/icons/computer.png")), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.twMachineTabs.addTab(self.machineTab, icon2, _fromUtf8(""))
-        self.txtStatus = QtGui.QTextEdit(self.spltHorizontal1)
+        self.txtStatus = QTextEditLineNumber(self.spltHorizontal1)
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Ubuntu Mono"))
         self.txtStatus.setFont(font)

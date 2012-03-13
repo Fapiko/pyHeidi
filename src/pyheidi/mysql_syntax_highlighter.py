@@ -21,6 +21,9 @@ class MysqlSyntaxHighlighter(QSyntaxHighlighter):
 					state = self.STATE__NORMAL
 					self.setFormat(start, i - start + 2, QColor("grey"))
 
+			if (text[i] == '#'):
+				self.setFormat(i, len(text) - i, QColor("grey"))
+
 			if (text.mid(i, 2) == '/*'):
 				start = i
 				state = self.STATE__MULTILINE_COMMENT
