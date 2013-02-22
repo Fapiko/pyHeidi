@@ -2,6 +2,7 @@ import atexit
 import sys
 import MySQLdb
 import _mysql_exceptions
+from database.DatabaseServer import DatabaseServer
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtGui import QMessageBox, QShortcut
 from sqlite3 import *
@@ -266,10 +267,12 @@ class SessionManager(QtGui.QDialog):
 		try:
 			dbConnection = MySQLdb.connect(host = session['hostname'], user = session['username'], passwd = session['password'],
 				port = session['port'])
+			dbServer = DatabaseServer(session['name'], dbConnection)
 			applicationWindow.show()
 			applicationWindow.showMaximized()
-			applicationWindow.reloadDbs(dbConnection)
+			applicationWindow.addDbServer(dbServer)
 			self.hide()
+
 		except _mysql_exceptions.OperationalError as e:
 			message = "Connection Error [%d]: %s" % (e[0], e[1])
 			QMessageBox.critical(self, 'Connection Error', message)
