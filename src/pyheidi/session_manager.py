@@ -280,8 +280,6 @@ class SessionManager(QtGui.QDialog):
 		if sessionName[-1] == '*':
 			sessionName = sessionName[:len(sessionName) - 2]
 
-		print session
-
 		if session['index'] is None:
 			self.curs = self.conn.execute("SELECT name FROM sqlite_master WHERE Type='table' and name = 'sessions'")
 
