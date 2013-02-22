@@ -43,7 +43,7 @@
        <property name="childrenCollapsible">
         <bool>true</bool>
        </property>
-       <widget class="QTreeView" name="treeView"/>
+       <widget class="QTreeView" name="databaseTree"/>
        <widget class="QTabWidget" name="twMachineTabs">
         <property name="tabShape">
          <enum>QTabWidget::Rounded</enum>
@@ -140,8 +140,6 @@
            </widget>
           </item>
          </layout>
-         <zorder>tabWidget</zorder>
-         <zorder>treeView</zorder>
         </widget>
        </widget>
       </widget>
@@ -156,7 +154,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

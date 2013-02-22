@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Thu Mar  8 01:27:10 2012
-#      by: PyQt4 UI code generator 4.9.1
+# Created: Thu Feb 21 23:06:04 2013
+#      by: PyQt4 UI code generator 4.9.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -36,9 +36,10 @@ class Ui_MainWindow(object):
         self.splitter.setHandleWidth(1)
         self.splitter.setChildrenCollapsible(True)
         self.splitter.setObjectName(_fromUtf8("splitter"))
-        self.treeView = QtGui.QTreeView(self.splitter)
-        self.treeView.setObjectName(_fromUtf8("treeView"))
+        self.databaseTree = QtGui.QTreeView(self.splitter)
+        self.databaseTree.setObjectName(_fromUtf8("databaseTree"))
         self.twMachineTabs = QtGui.QTabWidget(self.splitter)
+        self.twMachineTabs.setTabShape(QtGui.QTabWidget.Rounded)
         self.twMachineTabs.setObjectName(_fromUtf8("twMachineTabs"))
         self.machineTab = QtGui.QWidget()
         self.machineTab.setObjectName(_fromUtf8("machineTab"))
@@ -89,7 +90,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.splitter_2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 20))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 25))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))

@@ -8,6 +8,9 @@ from sqlite3 import *
 
 class SessionManager(QtGui.QDialog):
 	def __init__(self, mainApplicationWindow):
+		"""
+		@mainApplicationWindow: MainApplicationWindow
+		"""
 		atexit.register(self.shutdownEvent)
 		
 		self.conn = connect('../userdata.db')
@@ -21,7 +24,7 @@ class SessionManager(QtGui.QDialog):
 		self.initUI()
 		self.loadSessionManager()
 		self.treeServerManager.setCurrentItem(self.treeServerManager.topLevelItem(0))
-		self.mainApplicationMenu = mainApplicationWindow
+		self.mainApplicationWindow = mainApplicationWindow
 			
 	def initUI(self):
 		# No session label... TODO: should really move this text to resource file
@@ -258,18 +261,19 @@ class SessionManager(QtGui.QDialog):
 		
 	def slotButtonOpenClicked(self):
 		session = self.getCurrentSession()
+		applicationWindow = self.mainApplicationWindow
 
 		try:
 			dbConnection = MySQLdb.connect(host = session['hostname'], user = session['username'], passwd = session['password'],
 				port = session['port'])
-			self.mainApplicationMenu.show()
-			self.mainApplicationMenu.showMaximized()
+			applicationWindow.show()
+			applicationWindow.showMaximized()
+			applicationWindow.reloadDbs(dbConnection)
 			self.hide()
 		except _mysql_exceptions.OperationalError as e:
 			message = "Connection Error [%d]: %s" % (e[0], e[1])
 			QMessageBox.critical(self, 'Connection Error', message)
 
-		self.dbConnection = dbConnection
 
 
 	def slotButtonSaveClicked(self):
