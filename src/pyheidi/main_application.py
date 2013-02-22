@@ -6,9 +6,11 @@ from main_application_window import MainApplicationWindow
 class MainApplication():
 	def __init__(self):
 		app = QtGui.QApplication(sys.argv)
-		sessionManager = SessionManager()
+		mainApplicationWindow = MainApplicationWindow()
+		mainApplicationWindow.hide()
+		sessionManager = SessionManager(mainApplicationWindow)
 		sessionManager.show()
-#		mainApplicationWindow = MainApplicationWindow()
+
 #		mainApplicationWindow.show()
 #		mainApplicationWindow.showMaximized()
 		app.exec_()

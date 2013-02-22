@@ -1,10 +1,13 @@
 import atexit
 import sys
+import MySQLdb
+import _mysql_exceptions
 from PyQt4 import QtGui, QtCore
+from PyQt4.QtGui import QMessageBox, QShortcut
 from sqlite3 import *
 
 class SessionManager(QtGui.QDialog):
-	def __init__(self):
+	def __init__(self, mainApplicationWindow):
 		atexit.register(self.shutdownEvent)
 		
 		self.conn = connect('../userdata.db')
@@ -16,8 +19,9 @@ class SessionManager(QtGui.QDialog):
 		
 		super(SessionManager, self).__init__()
 		self.initUI()
-		self.loadSessionManager();
-		self.treeServerManager.setCurrentItem(self.treeServerManager.topLevelItem(0));
+		self.loadSessionManager()
+		self.treeServerManager.setCurrentItem(self.treeServerManager.topLevelItem(0))
+		self.mainApplicationMenu = mainApplicationWindow
 			
 	def initUI(self):
 		# No session label... TODO: should really move this text to resource file
@@ -132,6 +136,8 @@ class SessionManager(QtGui.QDialog):
 		self.textUser.textEdited.connect(self.sessionModified)
 		self.textPassword.textEdited.connect(self.sessionModified)
 		self.spinPort.valueChanged.connect(self.sessionModified)
+
+		QShortcut("Ctrl+S", self, self.slotButtonSaveClicked)
 		
 		self.setLayout(layoutH3)
 
@@ -251,54 +257,66 @@ class SessionManager(QtGui.QDialog):
 		
 		
 	def slotButtonOpenClicked(self):
-		print('open')
-		
-		
+		session = self.getCurrentSession()
+
+		try:
+			dbConnection = MySQLdb.connect(host = session['hostname'], user = session['username'], passwd = session['password'],
+				port = session['port'])
+			self.mainApplicationMenu.show()
+			self.mainApplicationMenu.showMaximized()
+			self.hide()
+		except _mysql_exceptions.OperationalError as e:
+			message = "Connection Error [%d]: %s" % (e[0], e[1])
+			QMessageBox.critical(self, 'Connection Error', message)
+
+		self.dbConnection = dbConnection
+
+
 	def slotButtonSaveClicked(self):
-		index = self.treeServerManager.indexOfTopLevelItem(self.treeServerManager.currentItem())
-		session = self.treeServerManager.currentItem()
-		sessionName = self.treeServerManager.currentItem().text(0)
-		
+		session = self.getCurrentSession()
+		sessionName = session['name']
+		sessionTreeItem = self.treeServerManager.currentItem()
 		
 		if sessionName[-1] == '*':
 			sessionName = sessionName[:len(sessionName) - 2]
-			
-		
-		if self.sessionIds[index] == None:
+
+		print session
+
+		if session['index'] is None:
 			self.curs = self.conn.execute("SELECT name FROM sqlite_master WHERE Type='table' and name = 'sessions'")
 
-			if self.curs.fetchone() == None:
+			if self.curs.fetchone() is None:
 				self.createSessionsTable()
 
 			self.curs.execute(
 				"INSERT INTO sessions (name, network_type, hostname, username, password, port) VALUES (?, ?, ?, ?, ?, ?)",
 					[
-						self.getStringFromQString(sessionName),
-						self.comboNetworkType.currentIndex(),
-						self.getStringFromQString(self.textHostname.text()),
-						self.getStringFromQString(self.textUser.text()),
-						self.getStringFromQString(self.textPassword.text()),
-						self.spinPort.value()
+						sessionName,
+						session['network_type'],
+						session['hostname'],
+						session['username'],
+						session['password'],
+						session['port']
 					]
 			)
 		else:
 			self.curs.execute(
 				"UPDATE sessions SET name = ?, network_type = ?, hostname = ?, username = ?, password = ?, port = ? WHERE id = ?",
-					[
-						self.getStringFromQString(sessionName),
-						self.comboNetworkType.currentIndex(),
-						self.getStringFromQString(self.textHostname.text()),
-						self.getStringFromQString(self.textUser.text()),
-						self.getStringFromQString(self.textPassword.text()),
-						self.spinPort.value(),
-						self.sessionIds[index]
-					]
+					(
+						sessionName,
+						session['network_type'],
+						session['hostname'],
+						session['username'],
+						session['password'],
+						session['port'],
+						session['index']
+					)
 			)
 
 		self.buttonSave.setEnabled(False)
-		session.setText(0, sessionName)
+		sessionTreeItem.setText(0, sessionName)
 		# Set server icon to unedited
-		session.setIcon(0, QtGui.QIcon('../resources/icons/server.png'))
+		sessionTreeItem.setIcon(0, QtGui.QIcon('../resources/icons/server.png'))
 			
 		
 	def slotServerSelectionChanged(self):
@@ -354,3 +372,18 @@ class SessionManager(QtGui.QDialog):
 		@type string: QString
 		"""
 		return unicode(string.toUtf8(), "utf-8");
+
+	def getCurrentSession(self):
+		sessionIndex = self.treeServerManager.indexOfTopLevelItem(self.treeServerManager.currentItem())
+		session = {
+			'id': sessionIndex,
+			'name': self.getStringFromQString(self.treeServerManager.currentItem().text(0)),
+			'network_type': self.comboNetworkType.currentIndex(),
+			'hostname': self.getStringFromQString(self.textHostname.text()),
+			'username': self.getStringFromQString(self.textUser.text()),
+			'password': self.getStringFromQString(self.textPassword.text()),
+			'port': self.spinPort.value(),
+			'index': self.sessionIds[sessionIndex]
+		}
+
+		return session
