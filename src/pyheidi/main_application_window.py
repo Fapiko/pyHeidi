@@ -1,4 +1,4 @@
-from PyQt4.QtCore import Qt, QModelIndex
+from PyQt4.QtCore import Qt, QString
 from PyQt4.QtGui import QIcon, QMainWindow, QTreeWidgetItem
 from ui.ui_mainwindow import Ui_MainWindow
 from database.DatabaseServer import DatabaseServer
@@ -10,7 +10,7 @@ class MainApplicationWindow(QMainWindow):
 		mainWindow = Ui_MainWindow()
 		mainWindow.setupUi(self)
 
-#		mainWindow.databaseTree.setBaseSize()
+		mainWindow.actionRefresh.activated.connect(self.actionRefresh)
 
 		self.mainWindow = mainWindow
 		self.show()
@@ -37,12 +37,14 @@ class MainApplicationWindow(QMainWindow):
 		serverItem.setText(0, server.name)
 		serverItem.setIcon(0, QIcon('../resources/icons/server.png'))
 		serverItem.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
+		serverItem.setChildIndicatorPolicy(QTreeWidgetItem.DontShowIndicatorWhenChildless)
 
 		self.mainWindow.databaseTree.addTopLevelItem(serverItem)
 		server.treeIndex = self.mainWindow.databaseTree.indexOfTopLevelItem(serverItem)
 		self.servers.append(server)
 
 		self.reloadServerDatabases(server)
+		self.refreshProcessList(server)
 
 	def reloadServerDatabases(self, server):
 		"""
@@ -54,7 +56,30 @@ class MainApplicationWindow(QMainWindow):
 		for row in cursor:
 			self.addDatabase(server, row[0])
 
+	def refreshProcessList(self, server):
+		"""
+		@type server: DatabaseServer
+		"""
+		processListTree = self.mainWindow.processListTree
+		processListTree.clear()
 
+		cursor = server.connection.cursor()
+		cursor.execute('SHOW FULL PROCESSLIST')
+		numProcesses = 0
+		for row in cursor:
+			numProcesses += 1
+			processItem = QTreeWidgetItem()
+			for index, field in enumerate(row):
+				if field is not None:
+					if type(field) is not str:
+						field = str(field)
+					processItem.setText(index, field)
 
+				processListTree.addTopLevelItem(processItem)
 
+		self.mainWindow.processListTab.setTabText(0, "Process List (%d)" % numProcesses)
+
+	def actionRefresh(self):
+		# We'll eventually need to add logic to detect what page we're currently on
+		self.refreshProcessList(self.servers[0])
 

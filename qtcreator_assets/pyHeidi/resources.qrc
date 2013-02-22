@@ -1,7 +1,9 @@
 <RCC>
-    <qresource prefix="/icons">
-        <file>resources/icons/heidi.ico</file>
-        <file>resources/icons/computer.png</file>
-        <file>resources/icons/database.png</file>
-    </qresource>
+  <qresource prefix="/icons">
+    <file>resources/icons/arrow_refresh.png</file>
+    <file>resources/icons/arrow_refresh_small.png</file>
+    <file>resources/icons/heidi.ico</file>
+    <file>resources/icons/computer.png</file>
+    <file>resources/icons/database.png</file>
+  </qresource>
 </RCC>
