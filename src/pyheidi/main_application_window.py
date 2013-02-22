@@ -8,6 +8,8 @@ class MainApplicationWindow(QMainWindow):
 		mainWindow = Ui_MainWindow()
 		mainWindow.setupUi(self)
 
+#		mainWindow.databaseTree.setBaseSize()
+
 		self.mainWindow = mainWindow
 		self.show()
 

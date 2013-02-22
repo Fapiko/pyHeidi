@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Thu Feb 21 23:06:04 2013
+# Created: Thu Feb 21 23:48:41 2013
 #      by: PyQt4 UI code generator 4.9.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,13 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(800, 600)
+        MainWindow.resize(1202, 603)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
+        MainWindow.setSizePolicy(sizePolicy)
+        MainWindow.setBaseSize(QtCore.QSize(200, 0))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/resources/icons/heidi.ico")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -27,18 +33,30 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.splitter_2 = QtGui.QSplitter(self.centralwidget)
         self.splitter_2.setOrientation(QtCore.Qt.Vertical)
-        self.splitter_2.setHandleWidth(1)
         self.splitter_2.setObjectName(_fromUtf8("splitter_2"))
         self.splitter = QtGui.QSplitter(self.splitter_2)
-        self.splitter.setLineWidth(0)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
-        self.splitter.setOpaqueResize(True)
-        self.splitter.setHandleWidth(1)
-        self.splitter.setChildrenCollapsible(True)
         self.splitter.setObjectName(_fromUtf8("splitter"))
-        self.databaseTree = QtGui.QTreeView(self.splitter)
+        self.databaseTree = QtGui.QTreeWidget(self.splitter)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.databaseTree.sizePolicy().hasHeightForWidth())
+        self.databaseTree.setSizePolicy(sizePolicy)
+        self.databaseTree.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        self.databaseTree.setBaseSize(QtCore.QSize(350, 0))
+        self.databaseTree.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.databaseTree.setRootIsDecorated(False)
+        self.databaseTree.setHeaderHidden(True)
+        self.databaseTree.setColumnCount(1)
         self.databaseTree.setObjectName(_fromUtf8("databaseTree"))
+        self.databaseTree.headerItem().setText(0, _fromUtf8("1"))
         self.twMachineTabs = QtGui.QTabWidget(self.splitter)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(1)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.twMachineTabs.sizePolicy().hasHeightForWidth())
+        self.twMachineTabs.setSizePolicy(sizePolicy)
         self.twMachineTabs.setTabShape(QtGui.QTabWidget.Rounded)
         self.twMachineTabs.setObjectName(_fromUtf8("twMachineTabs"))
         self.machineTab = QtGui.QWidget()
@@ -90,7 +108,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.splitter_2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1202, 25))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
