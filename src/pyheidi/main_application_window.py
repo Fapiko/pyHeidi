@@ -124,6 +124,3 @@ class MainApplicationWindow(QMainWindow):
 			cursor.execute("UPDATE settings SET value = ? WHERE name = 'mainwindow.width'", [self.width()])
 			cursor.execute("UPDATE settings SET value = ? WHERE name = 'mainwindow.height'", [self.height()])
 			self.configDb.commit()
-			print str(self.width()) + ' ' + str(self.height())
-
-
