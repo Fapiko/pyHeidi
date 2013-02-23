@@ -6,6 +6,7 @@ from database.DatabaseServer import DatabaseServer
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtGui import QMessageBox, QShortcut
 from sqlite3 import *
+from ConfigDB import ConfigDB
 
 class SessionManager(QtGui.QDialog):
 	def __init__(self, mainApplicationWindow):
@@ -17,6 +18,7 @@ class SessionManager(QtGui.QDialog):
 		self.conn = connect('../userdata.db')
 		self.conn.row_factory = Row
 		self.curs = self.conn.cursor()
+		mainApplicationWindow.configDb = self.conn
 		
 		self.currentSessionData = {}
 		self.sessionIds = []
@@ -26,6 +28,7 @@ class SessionManager(QtGui.QDialog):
 		self.loadSessionManager()
 		self.treeServerManager.setCurrentItem(self.treeServerManager.topLevelItem(0))
 		self.mainApplicationWindow = mainApplicationWindow
+
 			
 	def initUI(self):
 		# No session label... TODO: should really move this text to resource file

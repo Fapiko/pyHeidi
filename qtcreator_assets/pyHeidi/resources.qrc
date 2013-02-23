@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/icons">
+    <file>resources/icons/resultset_next.png</file>
     <file>resources/icons/arrow_refresh.png</file>
     <file>resources/icons/arrow_refresh_small.png</file>
     <file>resources/icons/heidi.ico</file>

@@ -91,7 +91,7 @@
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="machineTab">
          <attribute name="icon">
@@ -106,11 +106,15 @@
           <item>
            <widget class="QTabWidget" name="processListTab">
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="tab">
+             <attribute name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/icons/resources/icons/resultset_next.png</normaloff>:/icons/resources/icons/resultset_next.png</iconset>
+             </attribute>
              <attribute name="title">
-              <string>Process List (0)</string>
+              <string>Processes</string>
              </attribute>
              <layout class="QVBoxLayout" name="verticalLayout_4">
               <item>
@@ -233,6 +237,61 @@
               </item>
              </layout>
             </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_2">
+         <attribute name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/icons/resources/icons/database.png</normaloff>:/icons/resources/icons/database.png</iconset>
+         </attribute>
+         <attribute name="title">
+          <string>Database: </string>
+         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QTableWidget" name="tableWidget_2">
+            <column>
+             <property name="text">
+              <string>Name</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Rows</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Size</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Created</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Updated</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Engine</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Comment</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Type</string>
+             </property>
+            </column>
            </widget>
           </item>
          </layout>

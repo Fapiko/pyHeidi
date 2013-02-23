@@ -1,9 +1,16 @@
 from PyQt4.QtCore import Qt, QString
-from PyQt4.QtGui import QIcon, QMainWindow, QTreeWidgetItem
+from PyQt4.QtGui import QIcon, QMainWindow, QResizeEvent, QTreeWidgetItem
 from ui.ui_mainwindow import Ui_MainWindow
 from database.DatabaseServer import DatabaseServer
+from qthelpers.HeidiTreeWidgetItem import HeidiTreeWidgetItem
+import sqlite3
 
 class MainApplicationWindow(QMainWindow):
+	"""
+	@type configDb: sqlite3.Connection
+	@type servers: list
+	"""
+	configDb = None
 	servers = []
 	def __init__(self):
 		QMainWindow.__init__(self)
@@ -11,6 +18,7 @@ class MainApplicationWindow(QMainWindow):
 		mainWindow.setupUi(self)
 
 		mainWindow.actionRefresh.activated.connect(self.actionRefresh)
+		mainWindow.databaseTree.currentItemChanged.connect(self.updateCurrentDatabase)
 
 		self.mainWindow = mainWindow
 		self.show()
@@ -20,10 +28,11 @@ class MainApplicationWindow(QMainWindow):
 		@type server: DatabaseServer
 		@type name: str
 		"""
-		database = QTreeWidgetItem()
+		database = HeidiTreeWidgetItem()
 		database.setText(0, name)
 		database.setIcon(0, QIcon('../resources/icons/database.png'))
 		database.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
+		database.itemType = 'database'
 
 		serverItem = self.mainWindow.databaseTree.topLevelItem(server.treeIndex)
 		serverItem.addChild(database)
@@ -33,11 +42,12 @@ class MainApplicationWindow(QMainWindow):
 		"""
 		@type server: DatabaseServer
 		"""
-		serverItem = QTreeWidgetItem()
+		serverItem = HeidiTreeWidgetItem()
 		serverItem.setText(0, server.name)
 		serverItem.setIcon(0, QIcon('../resources/icons/server.png'))
 		serverItem.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
 		serverItem.setChildIndicatorPolicy(QTreeWidgetItem.DontShowIndicatorWhenChildless)
+		serverItem.itemType = 'server'
 
 		self.mainWindow.databaseTree.addTopLevelItem(serverItem)
 		server.treeIndex = self.mainWindow.databaseTree.indexOfTopLevelItem(serverItem)
@@ -82,4 +92,18 @@ class MainApplicationWindow(QMainWindow):
 	def actionRefresh(self):
 		# We'll eventually need to add logic to detect what page we're currently on
 		self.refreshProcessList(self.servers[0])
+
+	def updateCurrentDatabase(self, currentDatabase, previousDatabase):
+		"""
+		@type currentDatabase: QTreeWidgetItem
+		@type previousDatabase: QTreeWidgetItem
+		"""
+
+	def resizeEvent(self, resizeEvent):
+		"""
+		@type resizeEvent: QResizeEvent
+		"""
+		# cursor = self.configDb.cursor()
+		# cursor.execute()
+
 
