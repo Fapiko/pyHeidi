@@ -2,6 +2,7 @@ import sys
 from PyQt4 import QtGui
 from session_manager import SessionManager
 from main_application_window import MainApplicationWindow
+import sqlite3
 
 class MainApplication():
 	"""
@@ -10,10 +11,13 @@ class MainApplication():
 	configDb = None
 
 	def __init__(self):
+		configDb = sqlite3.connect('../userdata.db')
+		configDb.row_factory = sqlite3.Row
+
 		app = QtGui.QApplication(sys.argv)
-		mainApplicationWindow = MainApplicationWindow()
+		mainApplicationWindow = MainApplicationWindow(configDb)
 		mainApplicationWindow.hide()
-		sessionManager = SessionManager(mainApplicationWindow)
+		sessionManager = SessionManager(mainApplicationWindow, configDb)
 		sessionManager.show()
 
 		self.mainApplicationWindow = mainApplicationWindow
@@ -21,7 +25,6 @@ class MainApplication():
 		self.configDb = sessionManager.conn
 		cursor = self.configDb.cursor()
 
-		cursor.execute("INSERT INTO settings (name, value) VALUES ('mainwindow.width', '%s')", str(self.mainApplicationWindow.width()))
 		# Ensure settings table exists and create it if not
 		cursor.execute("SELECT name FROM sqlite_master WHERE Type='table' and name = 'settings'")
 		if cursor.fetchone() is None:
@@ -40,9 +43,7 @@ class MainApplication():
 			);
 		""")
 
-		print self.mainApplicationWindow.width().__str__()
-		print "INSERT INTO settings (name, value) VALUES ('mainwindow.width', %s)" % self.mainApplicationWindow.width()
-		cursor.execute("INSERT INTO settings (name, value) VALUES ('mainwindow.width', '%s')", str(self.mainApplicationWindow.width()))
-		cursor.execute("INSERT INTO settings (name, value) VALUES ('mainwindow.height', '%s')", str(self.mainApplicationWindow.height()))
+		cursor.execute("INSERT INTO settings (name, value) VALUES ('mainwindow.width', ?)", [self.mainApplicationWindow.width()])
+		cursor.execute("INSERT INTO settings (name, value) VALUES ('mainwindow.height', ?)", [self.mainApplicationWindow.height()])
 
 		self.configDb.commit()

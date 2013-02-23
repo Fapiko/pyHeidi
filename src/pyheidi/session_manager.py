@@ -6,16 +6,15 @@ from database.DatabaseServer import DatabaseServer
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtGui import QMessageBox, QShortcut
 from sqlite3 import *
-from ConfigDB import ConfigDB
 
 class SessionManager(QtGui.QDialog):
-	def __init__(self, mainApplicationWindow):
+	def __init__(self, mainApplicationWindow, configDb):
 		"""
 		@mainApplicationWindow: MainApplicationWindow
 		"""
 		atexit.register(self.shutdownEvent)
 		
-		self.conn = connect('../userdata.db')
+		self.conn = configDb
 		self.conn.row_factory = Row
 		self.curs = self.conn.cursor()
 		mainApplicationWindow.configDb = self.conn
@@ -272,7 +271,6 @@ class SessionManager(QtGui.QDialog):
 				port = session['port'])
 			dbServer = DatabaseServer(session['name'], dbConnection)
 			applicationWindow.show()
-			applicationWindow.showMaximized()
 			applicationWindow.addDbServer(dbServer)
 			self.hide()
 

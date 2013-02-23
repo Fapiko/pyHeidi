@@ -8,11 +8,16 @@ import sqlite3
 class MainApplicationWindow(QMainWindow):
 	"""
 	@type configDb: sqlite3.Connection
+	@type obeyResize: bool
 	@type servers: list
 	"""
 	configDb = None
 	servers = []
-	def __init__(self):
+	obeyResize = False
+
+	def __init__(self, configDb):
+		self.configDb = configDb
+
 		QMainWindow.__init__(self)
 		mainWindow = Ui_MainWindow()
 		mainWindow.setupUi(self)
@@ -22,6 +27,17 @@ class MainApplicationWindow(QMainWindow):
 
 		self.mainWindow = mainWindow
 		self.show()
+
+		cursor = configDb.cursor()
+		cursor.execute("SELECT * FROM settings WHERE name = 'mainwindow.width' OR name = 'mainwindow.height'")
+		for row in cursor:
+			if row['name'] == 'mainwindow.width':
+				width = int(row['value'])
+			elif row['name'] == 'mainwindow.height':
+				height = int(row['value'])
+
+		self.resize(width, height)
+		self.obeyResize = True
 
 	def addDatabase(self, server, name):
 		"""
@@ -103,7 +119,11 @@ class MainApplicationWindow(QMainWindow):
 		"""
 		@type resizeEvent: QResizeEvent
 		"""
-		# cursor = self.configDb.cursor()
-		# cursor.execute()
+		if self.obeyResize:
+			cursor = self.configDb.cursor()
+			cursor.execute("UPDATE settings SET value = ? WHERE name = 'mainwindow.width'", [self.width()])
+			cursor.execute("UPDATE settings SET value = ? WHERE name = 'mainwindow.height'", [self.height()])
+			self.configDb.commit()
+			print str(self.width()) + ' ' + str(self.height())
 
 
