@@ -4,6 +4,7 @@ from ui.ui_mainwindow import Ui_MainWindow
 from database.DatabaseServer import DatabaseServer
 from qthelpers.HeidiTreeWidgetItem import HeidiTreeWidgetItem
 from utilities.byte_sized_strings import byteSizedStrings
+import re
 
 class MainApplicationWindow(QMainWindow):
 	"""
@@ -24,20 +25,13 @@ class MainApplicationWindow(QMainWindow):
 
 		mainWindow.actionRefresh.activated.connect(self.actionRefresh)
 		mainWindow.databaseTree.currentItemChanged.connect(self.updateDatabaseTreeSelection)
+		mainWindow.databaseInfoTable.horizontalHeader().sectionResized.connect(self.databaseTreeColumnResized)
 
 		self.mainWindow = mainWindow
+		self.restoreSizePreferences()
 		self.show()
 
-		cursor = configDb.cursor()
-		cursor.execute("SELECT * FROM settings WHERE name = 'mainwindow.width' OR name = 'mainwindow.height'")
-		for row in cursor:
-			if row['name'] == 'mainwindow.width':
-				width = int(row['value'])
-			elif row['name'] == 'mainwindow.height':
-				height = int(row['value'])
 
-		self.resize(width, height)
-		self.obeyResize = True
 
 	def addDatabase(self, server, name):
 		"""
@@ -152,11 +146,15 @@ class MainApplicationWindow(QMainWindow):
 
 		cursor.execute("SHOW TABLE STATUS FROM `%s`" % dbName)
 		for row in cursor:
-			print row
 			if row['Create_time'] is None:
 				createdTime = ''
 			else:
 				createdTime = row['Create_time'].isoformat(' ')
+
+			if row['Update_time'] is None:
+				updatedTime = ''
+			else:
+				updatedTime = row['Update_time'].isoformat(' ')
 
 			index = databaseTable.rowCount()
 			databaseTable.insertRow(index)
@@ -164,7 +162,7 @@ class MainApplicationWindow(QMainWindow):
 			databaseTable.setItem(index, 1, QTableWidgetItem(str(row['Rows'])))
 			databaseTable.setItem(index, 2, QTableWidgetItem(byteSizedStrings(row['Data_length'])))
 			databaseTable.setItem(index, 3, QTableWidgetItem(createdTime))
-			# Updated
+			databaseTable.setItem(index, 4, QTableWidgetItem(updatedTime))
 			databaseTable.setItem(index, 5, QTableWidgetItem(row['Engine']))
 			databaseTable.setItem(index, 6, QTableWidgetItem(row['Comment']))
 			databaseTable.setItem(index, 7, QTableWidgetItem('table'))
@@ -175,8 +173,8 @@ class MainApplicationWindow(QMainWindow):
 		"""
 		if self.obeyResize:
 			cursor = self.configDb.cursor()
-			cursor.execute("UPDATE settings SET value = ? WHERE name = 'mainwindow.width'", [self.width()])
-			cursor.execute("UPDATE settings SET value = ? WHERE name = 'mainwindow.height'", [self.height()])
+			cursor.execute("REPLACE INTO settings (name, value) VALUES ('mainwindow.width', ?)", [self.width()])
+			cursor.execute("REPLACE INTO settings (name, value) VALUES ('mainwindow.height', ?)", [self.height()])
 			self.configDb.commit()
 
 	# Pretty much just using this getter for type hinting as PyCharm doesn't
@@ -187,3 +185,29 @@ class MainApplicationWindow(QMainWindow):
 		@rtype: DatabaseServer
 		"""
 		return self.servers[index]
+
+	def databaseTreeColumnResized(self, index, previousWidth, width):
+		# print "%d %d %d" % (index, width, previousWidth)
+		cursor = self.configDb.cursor()
+		cursor.execute("REPLACE INTO `settings` (name, value) VALUES ('databaseinfotable.%d.width', ?)" % index, [width])
+
+	def restoreSizePreferences(self):
+		cursor = self.configDb.cursor()
+		cursor.execute("SELECT * FROM settings")
+
+		mainWindowHeight = self.height()
+		mainWindowWidth = self.width()
+		dbInfoTableRegex = re.compile("^databaseinfotable\.[0-7]\.width")
+		for row in cursor:
+			if row['name'] == 'mainwindow.width':
+				mainWindowWidth = int(row['value'])
+			elif row['name'] == 'mainwindow.height':
+				mainWindowHeight = int(row['value'])
+			elif dbInfoTableRegex.match(row['name']):
+				index = int(row['name'].split('.')[1])
+				self.mainWindow.databaseInfoTable.setColumnWidth(index, int(row['value']))
+
+		self.resize(mainWindowWidth, mainWindowHeight)
+		self.obeyResize = True
+
+

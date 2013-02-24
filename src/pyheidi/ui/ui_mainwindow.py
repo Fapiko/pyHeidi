@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Sat Feb 23 19:26:09 2013
+# Created: Sat Feb 23 22:12:23 2013
 #      by: PyQt4 UI code generator 4.9.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -120,6 +120,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.databaseInfoTable = QtGui.QTableWidget(self.databaseTab)
         self.databaseInfoTable.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.databaseInfoTable.setAlternatingRowColors(False)
         self.databaseInfoTable.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
         self.databaseInfoTable.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.databaseInfoTable.setCornerButtonEnabled(False)
@@ -145,6 +146,7 @@ class Ui_MainWindow(object):
         self.databaseInfoTable.horizontalHeader().setDefaultSectionSize(80)
         self.databaseInfoTable.horizontalHeader().setHighlightSections(False)
         self.databaseInfoTable.horizontalHeader().setMinimumSectionSize(50)
+        self.databaseInfoTable.horizontalHeader().setStretchLastSection(True)
         self.databaseInfoTable.verticalHeader().setVisible(False)
         self.databaseInfoTable.verticalHeader().setDefaultSectionSize(20)
         self.databaseInfoTable.verticalHeader().setMinimumSectionSize(15)
