@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Sat Feb 23 22:12:23 2013
+# Created: Sun Feb 24 02:34:43 2013
 #      by: PyQt4 UI code generator 4.9.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -155,6 +155,11 @@ class Ui_MainWindow(object):
         icon4.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/resources/icons/database.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.twMachineTabs.addTab(self.databaseTab, icon4, _fromUtf8(""))
         self.txtStatus = QtGui.QTextEdit(self.splitter_2)
+        font = QtGui.QFont()
+        font.setBold(True)
+        font.setWeight(75)
+        self.txtStatus.setFont(font)
+        self.txtStatus.setTextInteractionFlags(QtCore.Qt.TextSelectableByKeyboard|QtCore.Qt.TextSelectableByMouse)
         self.txtStatus.setObjectName(_fromUtf8("txtStatus"))
         self.verticalLayout.addWidget(self.splitter_2)
         MainWindow.setCentralWidget(self.centralwidget)

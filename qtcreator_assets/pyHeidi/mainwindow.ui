@@ -337,7 +337,17 @@
         </widget>
        </widget>
       </widget>
-      <widget class="QTextEdit" name="txtStatus"/>
+      <widget class="QTextEdit" name="txtStatus">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>

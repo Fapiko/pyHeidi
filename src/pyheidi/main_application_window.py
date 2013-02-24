@@ -1,10 +1,11 @@
 from PyQt4.QtCore import Qt, QString
-from PyQt4.QtGui import QIcon, QMainWindow, QResizeEvent, QTableWidgetItem, QTreeWidgetItem
+from PyQt4.QtGui import QColor, QIcon, QMainWindow, QResizeEvent, QTableWidgetItem, QTreeWidgetItem
 from ui.ui_mainwindow import Ui_MainWindow
 from database.DatabaseServer import DatabaseServer
 from qthelpers.HeidiTreeWidgetItem import HeidiTreeWidgetItem
 from utilities.byte_sized_strings import byteSizedStrings
 import re
+from mysql_syntax_highlighter import MysqlSyntaxHighlighter
 
 class MainApplicationWindow(QMainWindow):
 	"""
@@ -26,6 +27,19 @@ class MainApplicationWindow(QMainWindow):
 		mainWindow.actionRefresh.activated.connect(self.actionRefresh)
 		mainWindow.databaseTree.currentItemChanged.connect(self.updateDatabaseTreeSelection)
 		mainWindow.databaseInfoTable.horizontalHeader().sectionResized.connect(self.databaseTreeColumnResized)
+		mainWindow.txtStatus.setTextColor(QColor('darkBlue'))
+		# mainWindow.txtStatus.append("# Single Comment")
+		# mainWindow.txtStatus.append("/* Multi\nLine Comment")
+		# mainWindow.txtStatus.append("*/")
+		# mainWindow.txtStatus.append("SELECT * FROM test_command;")
+		# mainWindow.txtStatus.append("SHOW TABLE STATUS; # Inline comment")
+		# mainWindow.txtStatus.append("/* comment */ SHOW DATABASES; /* commentz */")
+		# mainWindow.txtStatus.append("SHOW DATABASEN; /* start multiline")
+		# mainWindow.txtStatus.append("commenting */")
+		# mainWindow.txtStatus.append('SELECT * FROM facepalm; /* i can haz comment? */')
+
+
+		self.logHighlighter = MysqlSyntaxHighlighter(mainWindow.txtStatus.document())
 
 		self.mainWindow = mainWindow
 		self.restoreSizePreferences()
@@ -129,8 +143,7 @@ class MainApplicationWindow(QMainWindow):
 		@type database: HeidiTreeWidgetItem
 		"""
 		dbName = database.text(0)
-		connection = self.getServer(0).connection
-		cursor = connection.cursor()
+		server = self.getServer(0)
 
 		mainWindow = self.mainWindow
 		databaseTab = mainWindow.databaseTab
@@ -141,7 +154,7 @@ class MainApplicationWindow(QMainWindow):
 		for i in reversed(range(databaseTable.rowCount())):
 			databaseTable.removeRow(i)
 
-		cursor.execute("SHOW TABLE STATUS FROM `%s`" % dbName)
+		cursor = server.execute("SHOW TABLE STATUS FROM `%s`" % dbName)
 		for row in cursor:
 			if row['Create_time'] is None:
 				createdTime = ''

@@ -4,3 +4,4 @@ src/setup.py
 src/userdata.db
 .idea
 qtcreator_assets/pyHeidi/pyHeidi.pro.user
+*.pyc
