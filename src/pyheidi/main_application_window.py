@@ -3,7 +3,7 @@ from PyQt4.QtGui import QIcon, QMainWindow, QResizeEvent, QTableWidgetItem, QTre
 from ui.ui_mainwindow import Ui_MainWindow
 from database.DatabaseServer import DatabaseServer
 from qthelpers.HeidiTreeWidgetItem import HeidiTreeWidgetItem
-import sqlite3
+from utilities.byte_sized_strings import byteSizedStrings
 
 class MainApplicationWindow(QMainWindow):
 	"""
@@ -124,8 +124,14 @@ class MainApplicationWindow(QMainWindow):
 		@type currentItem: HeidiTreeWidgetItem
 		@type previousItem: HeidiTreeWidgetItem
 		"""
+
 		if currentItem.itemType == 'database':
 			self.updateCurrentDatabase(currentItem)
+		elif currentItem.itemType == 'server':
+			machineTab = self.mainWindow.machineTab
+			twMachineTabs = self.mainWindow.twMachineTabs
+			twMachineTabs.setTabText(twMachineTabs.indexOf(machineTab), "Host: %s" % currentItem.text(0))
+			twMachineTabs.setCurrentWidget(self.mainWindow.machineTab)
 
 	def updateCurrentDatabase(self, database):
 		"""
@@ -141,15 +147,24 @@ class MainApplicationWindow(QMainWindow):
 		twMachineTabs.setTabText(twMachineTabs.indexOf(databaseTab), "Database: %s" % dbName)
 		twMachineTabs.setCurrentWidget(databaseTab)
 		databaseTable = mainWindow.databaseInfoTable
+		for i in reversed(range(databaseTable.rowCount())):
+			databaseTable.removeRow(i)
 
 		cursor.execute("SHOW TABLE STATUS FROM `%s`" % dbName)
 		for row in cursor:
 			print row
+			if row['Create_time'] is None:
+				createdTime = ''
+			else:
+				createdTime = row['Create_time'].isoformat(' ')
+
 			index = databaseTable.rowCount()
 			databaseTable.insertRow(index)
 			databaseTable.setItem(index, 0, QTableWidgetItem(row['Name']))
 			databaseTable.setItem(index, 1, QTableWidgetItem(str(row['Rows'])))
-			# databaseTable.setItem(index, 3, QTableWidgetItem(row['Create_time']))
+			databaseTable.setItem(index, 2, QTableWidgetItem(byteSizedStrings(row['Data_length'])))
+			databaseTable.setItem(index, 3, QTableWidgetItem(createdTime))
+			# Updated
 			databaseTable.setItem(index, 5, QTableWidgetItem(row['Engine']))
 			databaseTable.setItem(index, 6, QTableWidgetItem(row['Comment']))
 			databaseTable.setItem(index, 7, QTableWidgetItem('table'))

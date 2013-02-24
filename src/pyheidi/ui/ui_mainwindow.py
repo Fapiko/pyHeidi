@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Sat Feb 23 16:42:14 2013
+# Created: Sat Feb 23 19:26:09 2013
 #      by: PyQt4 UI code generator 4.9.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -119,6 +119,10 @@ class Ui_MainWindow(object):
         self.horizontalLayout = QtGui.QHBoxLayout(self.databaseTab)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.databaseInfoTable = QtGui.QTableWidget(self.databaseTab)
+        self.databaseInfoTable.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.databaseInfoTable.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
+        self.databaseInfoTable.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.databaseInfoTable.setCornerButtonEnabled(False)
         self.databaseInfoTable.setObjectName(_fromUtf8("databaseInfoTable"))
         self.databaseInfoTable.setColumnCount(8)
         self.databaseInfoTable.setRowCount(0)
@@ -138,7 +142,12 @@ class Ui_MainWindow(object):
         self.databaseInfoTable.setHorizontalHeaderItem(6, item)
         item = QtGui.QTableWidgetItem()
         self.databaseInfoTable.setHorizontalHeaderItem(7, item)
+        self.databaseInfoTable.horizontalHeader().setDefaultSectionSize(80)
+        self.databaseInfoTable.horizontalHeader().setHighlightSections(False)
+        self.databaseInfoTable.horizontalHeader().setMinimumSectionSize(50)
         self.databaseInfoTable.verticalHeader().setVisible(False)
+        self.databaseInfoTable.verticalHeader().setDefaultSectionSize(20)
+        self.databaseInfoTable.verticalHeader().setMinimumSectionSize(15)
         self.horizontalLayout.addWidget(self.databaseInfoTable)
         icon4 = QtGui.QIcon()
         icon4.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/resources/icons/database.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -175,7 +184,7 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.actionRefresh)
 
         self.retranslateUi(MainWindow)
-        self.twMachineTabs.setCurrentIndex(0)
+        self.twMachineTabs.setCurrentIndex(1)
         self.processListTab.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -215,6 +224,7 @@ class Ui_MainWindow(object):
         item.setText(QtGui.QApplication.translate("MainWindow", "Default Collation", None, QtGui.QApplication.UnicodeUTF8))
         self.processListTab.setTabText(self.processListTab.indexOf(self.hostTabDB), QtGui.QApplication.translate("MainWindow", "Databases (0)", None, QtGui.QApplication.UnicodeUTF8))
         self.twMachineTabs.setTabText(self.twMachineTabs.indexOf(self.machineTab), QtGui.QApplication.translate("MainWindow", "Host: ", None, QtGui.QApplication.UnicodeUTF8))
+        self.databaseInfoTable.setSortingEnabled(True)
         item = self.databaseInfoTable.horizontalHeaderItem(0)
         item.setText(QtGui.QApplication.translate("MainWindow", "Name", None, QtGui.QApplication.UnicodeUTF8))
         item = self.databaseInfoTable.horizontalHeaderItem(1)
