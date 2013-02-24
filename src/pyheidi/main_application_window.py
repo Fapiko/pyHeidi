@@ -70,9 +70,7 @@ class MainApplicationWindow(QMainWindow):
 		"""
 		@type server: DatabaseServer
 		"""
-		cursor = server.connection.cursor()
-
-		cursor.execute('SHOW DATABASES')
+		cursor = server.execute('SHOW DATABASES')
 		for row in cursor:
 			self.addDatabase(server, row['Database'])
 
@@ -83,8 +81,7 @@ class MainApplicationWindow(QMainWindow):
 		processListTree = self.mainWindow.processListTree
 		processListTree.clear()
 
-		cursor = server.connection.cursor()
-		cursor.execute('SHOW FULL PROCESSLIST')
+		cursor = server.execute('SHOW FULL PROCESSLIST')
 
 		numProcesses = 0
 		for row in cursor:
@@ -187,9 +184,10 @@ class MainApplicationWindow(QMainWindow):
 		return self.servers[index]
 
 	def databaseTreeColumnResized(self, index, previousWidth, width):
-		# print "%d %d %d" % (index, width, previousWidth)
-		cursor = self.configDb.cursor()
-		cursor.execute("REPLACE INTO `settings` (name, value) VALUES ('databaseinfotable.%d.width', ?)" % index, [width])
+		# Last item auto stretches to take up the rest of the table
+		if index != 7:
+			cursor = self.configDb.cursor()
+			cursor.execute("REPLACE INTO `settings` (name, value) VALUES ('databaseinfotable.%d.width', ?)" % index, [width])
 
 	def restoreSizePreferences(self):
 		cursor = self.configDb.cursor()
