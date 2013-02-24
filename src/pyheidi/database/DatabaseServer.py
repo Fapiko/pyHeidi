@@ -7,10 +7,12 @@ class DatabaseServer:
 	@type treeIndex: number
 	"""
 	name = ""
-	connection = ""
+	connection = None
 	treeIndex = -1
+
 	def __init__(self, name, connection):
 		"""
+		@type name: str
 		@type connection: MySQLdb.Connection
 		"""
 		self.name = name

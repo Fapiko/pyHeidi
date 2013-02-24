@@ -1,5 +1,5 @@
 from PyQt4.QtCore import Qt, QString
-from PyQt4.QtGui import QIcon, QMainWindow, QResizeEvent, QTreeWidgetItem
+from PyQt4.QtGui import QIcon, QMainWindow, QResizeEvent, QTableWidgetItem, QTreeWidgetItem
 from ui.ui_mainwindow import Ui_MainWindow
 from database.DatabaseServer import DatabaseServer
 from qthelpers.HeidiTreeWidgetItem import HeidiTreeWidgetItem
@@ -23,7 +23,7 @@ class MainApplicationWindow(QMainWindow):
 		mainWindow.setupUi(self)
 
 		mainWindow.actionRefresh.activated.connect(self.actionRefresh)
-		mainWindow.databaseTree.currentItemChanged.connect(self.updateCurrentDatabase)
+		mainWindow.databaseTree.currentItemChanged.connect(self.updateDatabaseTreeSelection)
 
 		self.mainWindow = mainWindow
 		self.show()
@@ -80,7 +80,7 @@ class MainApplicationWindow(QMainWindow):
 
 		cursor.execute('SHOW DATABASES')
 		for row in cursor:
-			self.addDatabase(server, row[0])
+			self.addDatabase(server, row['Database'])
 
 	def refreshProcessList(self, server):
 		"""
@@ -91,17 +91,27 @@ class MainApplicationWindow(QMainWindow):
 
 		cursor = server.connection.cursor()
 		cursor.execute('SHOW FULL PROCESSLIST')
+
 		numProcesses = 0
 		for row in cursor:
 			numProcesses += 1
-			processItem = QTreeWidgetItem()
-			for index, field in enumerate(row):
-				if field is not None:
-					if type(field) is not str:
-						field = str(field)
-					processItem.setText(index, field)
 
-				processListTree.addTopLevelItem(processItem)
+			for value in row:
+				if row[value] is None:
+					row[value] = ''
+				elif type(row[value] != str):
+					row[value] = str(row[value])
+
+			processItem = QTreeWidgetItem()
+			processItem.setText(0, row['Id'])
+			processItem.setText(1, row['User'])
+			processItem.setText(2, row['Host'])
+			processItem.setText(3, row['db'])
+			processItem.setText(4, row['Command'])
+			processItem.setText(5, row['Time'])
+			processItem.setText(6, row['State'])
+			processItem.setText(7, row['Info'])
+			processListTree.addTopLevelItem(processItem)
 
 		self.mainWindow.processListTab.setTabText(0, "Process List (%d)" % numProcesses)
 
@@ -109,11 +119,40 @@ class MainApplicationWindow(QMainWindow):
 		# We'll eventually need to add logic to detect what page we're currently on
 		self.refreshProcessList(self.servers[0])
 
-	def updateCurrentDatabase(self, currentDatabase, previousDatabase):
+	def updateDatabaseTreeSelection(self, currentItem, previousItem):
 		"""
-		@type currentDatabase: QTreeWidgetItem
-		@type previousDatabase: QTreeWidgetItem
+		@type currentItem: HeidiTreeWidgetItem
+		@type previousItem: HeidiTreeWidgetItem
 		"""
+		if currentItem.itemType == 'database':
+			self.updateCurrentDatabase(currentItem)
+
+	def updateCurrentDatabase(self, database):
+		"""
+		@type database: HeidiTreeWidgetItem
+		"""
+		dbName = database.text(0)
+		connection = self.getServer(0).connection
+		cursor = connection.cursor()
+
+		mainWindow = self.mainWindow
+		databaseTab = mainWindow.databaseTab
+		twMachineTabs = mainWindow.twMachineTabs
+		twMachineTabs.setTabText(twMachineTabs.indexOf(databaseTab), "Database: %s" % dbName)
+		twMachineTabs.setCurrentWidget(databaseTab)
+		databaseTable = mainWindow.databaseInfoTable
+
+		cursor.execute("SHOW TABLE STATUS FROM `%s`" % dbName)
+		for row in cursor:
+			print row
+			index = databaseTable.rowCount()
+			databaseTable.insertRow(index)
+			databaseTable.setItem(index, 0, QTableWidgetItem(row['Name']))
+			databaseTable.setItem(index, 1, QTableWidgetItem(str(row['Rows'])))
+			# databaseTable.setItem(index, 3, QTableWidgetItem(row['Create_time']))
+			databaseTable.setItem(index, 5, QTableWidgetItem(row['Engine']))
+			databaseTable.setItem(index, 6, QTableWidgetItem(row['Comment']))
+			databaseTable.setItem(index, 7, QTableWidgetItem('table'))
 
 	def resizeEvent(self, resizeEvent):
 		"""
@@ -124,3 +163,12 @@ class MainApplicationWindow(QMainWindow):
 			cursor.execute("UPDATE settings SET value = ? WHERE name = 'mainwindow.width'", [self.width()])
 			cursor.execute("UPDATE settings SET value = ? WHERE name = 'mainwindow.height'", [self.height()])
 			self.configDb.commit()
+
+	# Pretty much just using this getter for type hinting as PyCharm doesn't
+	# seem to support inline hints afaik
+	def getServer(self, index):
+		"""
+		@type index: int
+		@rtype: DatabaseServer
+		"""
+		return self.servers[index]

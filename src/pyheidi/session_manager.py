@@ -1,6 +1,7 @@
 import atexit
 import sys
 import MySQLdb
+import MySQLdb.cursors
 import _mysql_exceptions
 from database.DatabaseServer import DatabaseServer
 from PyQt4 import QtGui, QtCore
@@ -268,7 +269,7 @@ class SessionManager(QtGui.QDialog):
 
 		try:
 			dbConnection = MySQLdb.connect(host = session['hostname'], user = session['username'], passwd = session['password'],
-				port = session['port'])
+				port = session['port'], cursorclass = MySQLdb.cursors.DictCursor)
 			dbServer = DatabaseServer(session['name'], dbConnection)
 			applicationWindow.show()
 			applicationWindow.addDbServer(dbServer)
