@@ -49,7 +49,6 @@ class Database:
 		"""
 		return self.databaseTreeItem
 
-
 	def setAsCurrentDatabase(self):
 		if len(self.tables) == 0:
 			self.refreshTables()
@@ -79,3 +78,17 @@ class Database:
 			databaseTable.setItem(index, 6, QTableWidgetItem(table.comment))
 			databaseTable.setItem(index, 7, QTableWidgetItem('table'))
 
+	def findTableByName(self, name):
+		"""
+		@type name: str
+		"""
+		for table in self.tables:
+			if table.name == name:
+				return table
+
+	def setCurrentTable(self, table):
+		"""
+		@type table: Table
+		"""
+		self.currentTable = table
+		table.setAsCurrentTable()

@@ -22,6 +22,21 @@ class MainApplicationWindow(QMainWindow):
 		mainWindow.twMachineTabs.removePage(mainWindow.databaseTab)
 		mainWindow.twMachineTabs.removePage(mainWindow.tableTab)
 
+		# mainWindow.txtStatus.append("# Single Comment")
+		# mainWindow.txtStatus.append("/* Multi\nLine Comment")
+		# mainWindow.txtStatus.append("*/")
+		# mainWindow.txtStatus.append("SHOW CREATE TABLE FOR `apiclarify`.`facepalm`;")
+		# mainWindow.txtStatus.append("/* multi-line\n commentz */ SHOW CREATE TABLE FOR `apiclarify`.`facepalm`;")
+		# mainWindow.txtStatus.append("/* comment */ SHOW CREATE TABLE FOR `apiclarify`.`facepalm`; /* commentz */")
+		# mainWindow.txtStatus.append("/* comment SHOW CREATE TABLE FOR `apiclarify`.`facepalm`; commentz */")
+		# mainWindow.txtStatus.append("/* comment \nSHOW CREATE TABLE FOR `apiclarify`.`facepalm`; commentz */")
+		# mainWindow.txtStatus.append("SELECT * FROM test_command;")
+		# mainWindow.txtStatus.append("SHOW TABLE STATUS; # Inline comment")
+		# mainWindow.txtStatus.append("/* comment */ SHOW DATABASES; /* commentz */")
+		# mainWindow.txtStatus.append("SHOW DATABASEN; /* start multiline")
+		# mainWindow.txtStatus.append("commenting */")
+		# mainWindow.txtStatus.append('SELECT * FROM facepalm; /* i can haz comment? */')
+
 		self.logHighlighter = MysqlSyntaxHighlighter(mainWindow.txtStatus.document())
 
 		self.mainWindow = mainWindow
@@ -59,6 +74,11 @@ class MainApplicationWindow(QMainWindow):
 			twMachineTabs = self.mainWindow.twMachineTabs
 			twMachineTabs.setTabText(twMachineTabs.indexOf(machineTab), "Host: %s" % currentItem.text(0))
 			twMachineTabs.setCurrentWidget(self.mainWindow.machineTab)
+		elif currentItem.itemType == 'table':
+			self.updateCurrentDatabase(currentItem.parent())
+			self.showTableTab()
+			tableName = currentItem.text(0)
+			self.currentDatabase.setCurrentTable(self.currentDatabase.findTableByName(tableName))
 
 	def updateCurrentDatabase(self, databaseTreeItem):
 		"""
@@ -67,6 +87,7 @@ class MainApplicationWindow(QMainWindow):
 		dbName = databaseTreeItem.text(0)
 		server = self.getServer(0)
 		database = server.findDatabaseByName(dbName)
+		self.currentDatabase = database
 		server.setCurrentDatabase(database)
 
 	def resizeEvent(self, resizeEvent):
@@ -124,6 +145,9 @@ class MainApplicationWindow(QMainWindow):
 
 	def showDatabaseTab(self):
 		self.showTab(self.mainWindow.databaseTab, QIcon('../resources/icons/database.png'), 'Database:')
+
+	def showTableTab(self):
+		self.showTab(self.mainWindow.tableTab, QIcon('../resources/icons/table.png'), 'Table:')
 
 	def showTab(self, tab, name, icon):
 		"""

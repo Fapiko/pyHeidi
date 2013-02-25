@@ -55,3 +55,7 @@ class Table:
 			return ''
 		else:
 			return timestamp.isoformat(' ')
+
+	def setAsCurrentTable(self):
+		self.database.server.execute("SHOW CREATE TABLE `%s`.`%s`" %
+									 (self.database.name, self.name))
