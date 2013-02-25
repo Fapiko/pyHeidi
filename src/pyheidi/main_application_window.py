@@ -1,4 +1,4 @@
-from PyQt4.QtGui import QColor, QMainWindow, QResizeEvent
+from PyQt4.QtGui import QColor, QIcon, QMainWindow, QResizeEvent
 from ui.ui_mainwindow import Ui_MainWindow
 from database.DatabaseServer import DatabaseServer
 import re
@@ -19,6 +19,8 @@ class MainApplicationWindow(QMainWindow):
 		mainWindow.databaseInfoTable.horizontalHeader().sectionResized.connect(self.databaseTreeColumnResized)
 		mainWindow.databaseTree.itemExpanded.connect(self.databaseTreeItemExpanded)
 		mainWindow.txtStatus.setTextColor(QColor('darkBlue'))
+		mainWindow.twMachineTabs.removePage(mainWindow.databaseTab)
+		mainWindow.twMachineTabs.removePage(mainWindow.tableTab)
 
 		self.logHighlighter = MysqlSyntaxHighlighter(mainWindow.txtStatus.document())
 
@@ -31,12 +33,13 @@ class MainApplicationWindow(QMainWindow):
 		@type server: DatabaseServer
 		"""
 		self.servers.append(server)
+		self.currentServer = server
 		server.reloadDatabases()
 		server.refreshProcessList()
 
 	def actionRefresh(self):
 		# We'll eventually need to add logic to detect what page we're currently on
-		self.servers[0].refreshProcessList()
+		self.currentServer.refreshProcessList()
 
 	def updateDatabaseTreeSelection(self, currentItem, previousItem):
 		"""
@@ -46,6 +49,12 @@ class MainApplicationWindow(QMainWindow):
 		if currentItem.itemType == 'database':
 			self.updateCurrentDatabase(currentItem)
 		elif currentItem.itemType == 'server':
+			# Remove any tabs not dealing with server specific stuff
+			mainWindow = self.mainWindow
+			mainWindow.twMachineTabs.removePage(mainWindow.databaseTab)
+			mainWindow.twMachineTabs.removePage(mainWindow.tableTab)
+
+			# Initialize the machine tab
 			machineTab = self.mainWindow.machineTab
 			twMachineTabs = self.mainWindow.twMachineTabs
 			twMachineTabs.setTabText(twMachineTabs.indexOf(machineTab), "Host: %s" % currentItem.text(0))
@@ -109,10 +118,17 @@ class MainApplicationWindow(QMainWindow):
 		@type item: HeidiTreeWidgetItem
 		"""
 		if item.itemType == 'database':
-			database = self.servers[0].findDatabaseByName(item.text(0))
+			database = self.currentServer.findDatabaseByName(item.text(0))
 			if len(database.tables) == 0:
 				database.refreshTables()
 
+	def showDatabaseTab(self):
+		self.showTab(self.mainWindow.databaseTab, QIcon('../resources/icons/database.png'), 'Database:')
 
-
-
+	def showTab(self, tab, name, icon):
+		"""
+		@type tab: QTabWidget
+		@type icon: QIcon
+		@type name: str
+		"""
+		self.mainWindow.twMachineTabs.addTab(tab, name, icon)

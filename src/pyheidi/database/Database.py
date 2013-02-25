@@ -54,6 +54,7 @@ class Database:
 		if len(self.tables) == 0:
 			self.refreshTables()
 
+		self.applicationWindow.showDatabaseTab()
 		mainWindow = self.applicationWindow.mainWindow
 		databaseTab = mainWindow.databaseTab
 		twMachineTabs = mainWindow.twMachineTabs
