@@ -7,3 +7,6 @@ class MainApplicationWindow(QtGui.QMainWindow):
 		mainWindow = Ui_MainWindow()
 		mainWindow.setupUi(self)
 		self.show()
+
+		mainWindow.spltHorizontal1.setStretchFactor(0, 1)
+		mainWindow.spltVertical1.setStretchFactor(1, 1)
