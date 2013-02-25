@@ -1,6 +1,7 @@
 from PyQt4.QtCore import Qt, QString
 from PyQt4.QtGui import QColor, QIcon, QMainWindow, QResizeEvent, QTableWidgetItem, QTreeWidgetItem
 from ui.ui_mainwindow import Ui_MainWindow
+from database.Database import Database
 from database.DatabaseServer import DatabaseServer
 from qthelpers.HeidiTreeWidgetItem import HeidiTreeWidgetItem
 from utilities.byte_sized_strings import byteSizedStrings
@@ -27,17 +28,8 @@ class MainApplicationWindow(QMainWindow):
 		mainWindow.actionRefresh.activated.connect(self.actionRefresh)
 		mainWindow.databaseTree.currentItemChanged.connect(self.updateDatabaseTreeSelection)
 		mainWindow.databaseInfoTable.horizontalHeader().sectionResized.connect(self.databaseTreeColumnResized)
+		mainWindow.databaseTree.itemExpanded.connect(self.databaseTreeItemExpanded)
 		mainWindow.txtStatus.setTextColor(QColor('darkBlue'))
-		# mainWindow.txtStatus.append("# Single Comment")
-		# mainWindow.txtStatus.append("/* Multi\nLine Comment")
-		# mainWindow.txtStatus.append("*/")
-		# mainWindow.txtStatus.append("SELECT * FROM test_command;")
-		# mainWindow.txtStatus.append("SHOW TABLE STATUS; # Inline comment")
-		# mainWindow.txtStatus.append("/* comment */ SHOW DATABASES; /* commentz */")
-		# mainWindow.txtStatus.append("SHOW DATABASEN; /* start multiline")
-		# mainWindow.txtStatus.append("commenting */")
-		# mainWindow.txtStatus.append('SELECT * FROM facepalm; /* i can haz comment? */')
-
 
 		self.logHighlighter = MysqlSyntaxHighlighter(mainWindow.txtStatus.document())
 
@@ -45,38 +37,11 @@ class MainApplicationWindow(QMainWindow):
 		self.restoreSizePreferences()
 		self.show()
 
-
-
-	def addDatabase(self, server, name):
-		"""
-		@type server: DatabaseServer
-		@type name: str
-		"""
-		database = HeidiTreeWidgetItem()
-		database.setText(0, name)
-		database.setIcon(0, QIcon('../resources/icons/database.png'))
-		database.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
-		database.itemType = 'database'
-
-		serverItem = self.mainWindow.databaseTree.topLevelItem(server.treeIndex)
-		serverItem.addChild(database)
-		serverItem.setExpanded(True)
-
 	def addDbServer(self, server):
 		"""
 		@type server: DatabaseServer
 		"""
-		serverItem = HeidiTreeWidgetItem()
-		serverItem.setText(0, server.name)
-		serverItem.setIcon(0, QIcon('../resources/icons/server.png'))
-		serverItem.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
-		serverItem.setChildIndicatorPolicy(QTreeWidgetItem.DontShowIndicatorWhenChildless)
-		serverItem.itemType = 'server'
-
-		self.mainWindow.databaseTree.addTopLevelItem(serverItem)
-		server.treeIndex = self.mainWindow.databaseTree.indexOfTopLevelItem(serverItem)
 		self.servers.append(server)
-
 		self.reloadServerDatabases(server)
 		self.refreshProcessList(server)
 
@@ -84,9 +49,8 @@ class MainApplicationWindow(QMainWindow):
 		"""
 		@type server: DatabaseServer
 		"""
-		cursor = server.execute('SHOW DATABASES')
-		for row in cursor:
-			self.addDatabase(server, row['Database'])
+		server.reloadDatabases()
+
 
 	def refreshProcessList(self, server):
 		"""
@@ -129,7 +93,6 @@ class MainApplicationWindow(QMainWindow):
 		@type currentItem: HeidiTreeWidgetItem
 		@type previousItem: HeidiTreeWidgetItem
 		"""
-
 		if currentItem.itemType == 'database':
 			self.updateCurrentDatabase(currentItem)
 		elif currentItem.itemType == 'server':
@@ -154,6 +117,8 @@ class MainApplicationWindow(QMainWindow):
 		for i in reversed(range(databaseTable.rowCount())):
 			databaseTable.removeRow(i)
 
+
+
 		cursor = server.execute("SHOW TABLE STATUS FROM `%s`" % dbName)
 		for row in cursor:
 			if row['Create_time'] is None:
@@ -168,7 +133,9 @@ class MainApplicationWindow(QMainWindow):
 
 			index = databaseTable.rowCount()
 			databaseTable.insertRow(index)
-			databaseTable.setItem(index, 0, QTableWidgetItem(row['Name']))
+			nameItem = QTableWidgetItem(row['Name'])
+			nameItem.setIcon(QIcon('../resources/icons/table.png'))
+			databaseTable.setItem(index, 0, nameItem)
 			databaseTable.setItem(index, 1, QTableWidgetItem(str(row['Rows'])))
 			databaseTable.setItem(index, 2, QTableWidgetItem(byteSizedStrings(row['Data_length'])))
 			databaseTable.setItem(index, 3, QTableWidgetItem(createdTime))
@@ -176,6 +143,8 @@ class MainApplicationWindow(QMainWindow):
 			databaseTable.setItem(index, 5, QTableWidgetItem(row['Engine']))
 			databaseTable.setItem(index, 6, QTableWidgetItem(row['Comment']))
 			databaseTable.setItem(index, 7, QTableWidgetItem('table'))
+
+
 
 	def resizeEvent(self, resizeEvent):
 		"""
@@ -220,5 +189,14 @@ class MainApplicationWindow(QMainWindow):
 
 		self.resize(mainWindowWidth, mainWindowHeight)
 		self.obeyResize = True
+
+	def databaseTreeItemExpanded(self, item):
+		"""
+		@type item: HeidiTreeWidgetItem
+		"""
+		if item.itemType == 'database' and item.childCount() == 0:
+			self.refreshTablesForDatabase(item)
+
+
 
 

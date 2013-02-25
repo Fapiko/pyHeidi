@@ -270,7 +270,7 @@ class SessionManager(QtGui.QDialog):
 		try:
 			dbConnection = MySQLdb.connect(host = session['hostname'], user = session['username'], passwd = session['password'],
 				port = session['port'], cursorclass = MySQLdb.cursors.DictCursor)
-			dbServer = DatabaseServer(session['name'], dbConnection, applicationWindow.mainWindow.txtStatus)
+			dbServer = DatabaseServer(session['name'], dbConnection, applicationWindow)
 			applicationWindow.show()
 			applicationWindow.addDbServer(dbServer)
 			self.hide()
