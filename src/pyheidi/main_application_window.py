@@ -1,10 +1,6 @@
-from PyQt4.QtCore import Qt, QString
-from PyQt4.QtGui import QColor, QIcon, QMainWindow, QResizeEvent, QTableWidgetItem, QTreeWidgetItem
+from PyQt4.QtGui import QColor, QMainWindow, QResizeEvent
 from ui.ui_mainwindow import Ui_MainWindow
-from database.Database import Database
 from database.DatabaseServer import DatabaseServer
-from qthelpers.HeidiTreeWidgetItem import HeidiTreeWidgetItem
-from utilities.byte_sized_strings import byteSizedStrings
 import re
 from mysql_syntax_highlighter import MysqlSyntaxHighlighter
 
