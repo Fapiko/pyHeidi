@@ -8,17 +8,18 @@ class DatabaseServer:
 	"""
 	@type name: str
 	@type connection: MySQLdb.Connection
-	@type treeIndex: int
 	@type applicationWindow: MainApplicationWindow
 	@type databases: list
 	@type databaseTreeItem: HeidiTreeWidgetItem
+	@type currentDatabase: Database
 	"""
 	name = ""
 	connection = None
-	treeIndex = -1
 	statusWindow = None
 	databases = []
 	databaseTreeItem = None
+	currentDatabase = None
+	applicationWindow = None
 
 	def __init__(self, name, connection, applicationWindow):
 		"""
@@ -74,5 +75,53 @@ class DatabaseServer:
 		@type server: DatabaseServer
 		@type name: str
 		"""
-		database = Database(self, self.applicationWindow, name)
+		database = Database(self, name)
 		self.databases.append(database)
+
+	def refreshProcessList(self):
+		"""
+		@type server: DatabaseServer
+		"""
+		processListTree = self.applicationWindow.mainWindow.processListTree
+		processListTree.clear()
+
+		cursor = self.execute('SHOW FULL PROCESSLIST')
+
+		numProcesses = 0
+		for row in cursor:
+			numProcesses += 1
+
+			for value in row:
+				if row[value] is None:
+					row[value] = ''
+				elif type(row[value] != str):
+					row[value] = str(row[value])
+
+			processItem = QTreeWidgetItem()
+			processItem.setText(0, row['Id'])
+			processItem.setText(1, row['User'])
+			processItem.setText(2, row['Host'])
+			processItem.setText(3, row['db'])
+			processItem.setText(4, row['Command'])
+			processItem.setText(5, row['Time'])
+			processItem.setText(6, row['State'])
+			processItem.setText(7, row['Info'])
+			processListTree.addTopLevelItem(processItem)
+
+		self.applicationWindow.mainWindow.processListTab.setTabText(0, "Process List (%d)" % numProcesses)
+
+	def setCurrentDatabase(self, database):
+		"""
+		@type database: Database
+		"""
+		self.currentDatabase = database
+		database.setAsCurrentDatabase()
+
+	def findDatabaseByName(self, name):
+		"""
+		@type name: str
+		@rtype: Database
+		"""
+		for database in self.databases:
+			if database.name == name:
+				return database

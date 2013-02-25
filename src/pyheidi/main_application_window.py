@@ -9,16 +9,9 @@ import re
 from mysql_syntax_highlighter import MysqlSyntaxHighlighter
 
 class MainApplicationWindow(QMainWindow):
-	"""
-	@type configDb: sqlite3.Connection
-	@type obeyResize: bool
-	@type servers: list
-	"""
-	configDb = None
-	servers = []
-	obeyResize = False
-
 	def __init__(self, configDb):
+		self.obeyResize = False
+		self.servers = []
 		self.configDb = configDb
 
 		QMainWindow.__init__(self)
@@ -42,51 +35,12 @@ class MainApplicationWindow(QMainWindow):
 		@type server: DatabaseServer
 		"""
 		self.servers.append(server)
-		self.reloadServerDatabases(server)
-		self.refreshProcessList(server)
-
-	def reloadServerDatabases(self, server):
-		"""
-		@type server: DatabaseServer
-		"""
 		server.reloadDatabases()
-
-
-	def refreshProcessList(self, server):
-		"""
-		@type server: DatabaseServer
-		"""
-		processListTree = self.mainWindow.processListTree
-		processListTree.clear()
-
-		cursor = server.execute('SHOW FULL PROCESSLIST')
-
-		numProcesses = 0
-		for row in cursor:
-			numProcesses += 1
-
-			for value in row:
-				if row[value] is None:
-					row[value] = ''
-				elif type(row[value] != str):
-					row[value] = str(row[value])
-
-			processItem = QTreeWidgetItem()
-			processItem.setText(0, row['Id'])
-			processItem.setText(1, row['User'])
-			processItem.setText(2, row['Host'])
-			processItem.setText(3, row['db'])
-			processItem.setText(4, row['Command'])
-			processItem.setText(5, row['Time'])
-			processItem.setText(6, row['State'])
-			processItem.setText(7, row['Info'])
-			processListTree.addTopLevelItem(processItem)
-
-		self.mainWindow.processListTab.setTabText(0, "Process List (%d)" % numProcesses)
+		server.refreshProcessList()
 
 	def actionRefresh(self):
 		# We'll eventually need to add logic to detect what page we're currently on
-		self.refreshProcessList(self.servers[0])
+		self.servers[0].refreshProcessList()
 
 	def updateDatabaseTreeSelection(self, currentItem, previousItem):
 		"""
@@ -101,50 +55,14 @@ class MainApplicationWindow(QMainWindow):
 			twMachineTabs.setTabText(twMachineTabs.indexOf(machineTab), "Host: %s" % currentItem.text(0))
 			twMachineTabs.setCurrentWidget(self.mainWindow.machineTab)
 
-	def updateCurrentDatabase(self, database):
+	def updateCurrentDatabase(self, databaseTreeItem):
 		"""
-		@type database: HeidiTreeWidgetItem
+		@type databaseTreeItem: HeidiTreeWidgetItem
 		"""
-		dbName = database.text(0)
+		dbName = databaseTreeItem.text(0)
 		server = self.getServer(0)
-
-		mainWindow = self.mainWindow
-		databaseTab = mainWindow.databaseTab
-		twMachineTabs = mainWindow.twMachineTabs
-		twMachineTabs.setTabText(twMachineTabs.indexOf(databaseTab), "Database: %s" % dbName)
-		twMachineTabs.setCurrentWidget(databaseTab)
-		databaseTable = mainWindow.databaseInfoTable
-		for i in reversed(range(databaseTable.rowCount())):
-			databaseTable.removeRow(i)
-
-
-
-		cursor = server.execute("SHOW TABLE STATUS FROM `%s`" % dbName)
-		for row in cursor:
-			if row['Create_time'] is None:
-				createdTime = ''
-			else:
-				createdTime = row['Create_time'].isoformat(' ')
-
-			if row['Update_time'] is None:
-				updatedTime = ''
-			else:
-				updatedTime = row['Update_time'].isoformat(' ')
-
-			index = databaseTable.rowCount()
-			databaseTable.insertRow(index)
-			nameItem = QTableWidgetItem(row['Name'])
-			nameItem.setIcon(QIcon('../resources/icons/table.png'))
-			databaseTable.setItem(index, 0, nameItem)
-			databaseTable.setItem(index, 1, QTableWidgetItem(str(row['Rows'])))
-			databaseTable.setItem(index, 2, QTableWidgetItem(byteSizedStrings(row['Data_length'])))
-			databaseTable.setItem(index, 3, QTableWidgetItem(createdTime))
-			databaseTable.setItem(index, 4, QTableWidgetItem(updatedTime))
-			databaseTable.setItem(index, 5, QTableWidgetItem(row['Engine']))
-			databaseTable.setItem(index, 6, QTableWidgetItem(row['Comment']))
-			databaseTable.setItem(index, 7, QTableWidgetItem('table'))
-
-
+		database = server.findDatabaseByName(dbName)
+		server.setCurrentDatabase(database)
 
 	def resizeEvent(self, resizeEvent):
 		"""
@@ -194,8 +112,10 @@ class MainApplicationWindow(QMainWindow):
 		"""
 		@type item: HeidiTreeWidgetItem
 		"""
-		if item.itemType == 'database' and item.childCount() == 0:
-			self.refreshTablesForDatabase(item)
+		if item.itemType == 'database':
+			database = self.servers[0].findDatabaseByName(item.text(0))
+			if len(database.tables) == 0:
+				database.refreshTables()
 
 
 
