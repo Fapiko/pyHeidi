@@ -1,4 +1,5 @@
-from PyQt4.QtGui import QColor, QIcon, QMainWindow, QResizeEvent
+from PyQt4.QtCore import Qt, QPoint
+from PyQt4.QtGui import QColor, QIcon, QMainWindow, QMenu, QResizeEvent
 from ui.ui_mainwindow import Ui_MainWindow
 from database.DatabaseServer import DatabaseServer
 import re
@@ -14,9 +15,10 @@ class MainApplicationWindow(QMainWindow):
 		mainWindow = Ui_MainWindow()
 		mainWindow.setupUi(self)
 
+		databaseInfoTable = mainWindow.databaseInfoTable
 		mainWindow.actionRefresh.activated.connect(self.actionRefresh)
 		mainWindow.databaseTree.currentItemChanged.connect(self.updateDatabaseTreeSelection)
-		mainWindow.databaseInfoTable.horizontalHeader().sectionResized.connect(self.databaseTreeColumnResized)
+		databaseInfoTable.horizontalHeader().sectionResized.connect(self.databaseTreeColumnResized)
 		mainWindow.databaseTree.itemExpanded.connect(self.databaseTreeItemExpanded)
 		mainWindow.txtStatus.setTextColor(QColor('darkBlue'))
 		mainWindow.twMachineTabs.removePage(mainWindow.databaseTab)
@@ -42,6 +44,22 @@ class MainApplicationWindow(QMainWindow):
 		self.mainWindow = mainWindow
 		self.restoreSizePreferences()
 		self.show()
+
+		databaseInfoTable.setContextMenuPolicy(Qt.CustomContextMenu)
+		databaseInfoTable.customContextMenuRequested.connect(self.databaseContextMenu)
+
+	def databaseContextMenu(self, point):
+		"""
+		@type point: QPoint
+		"""
+		databaseMenu = QMenu()
+		databaseCreateMenu = QMenu('Create Item')
+		databaseMenu.addMenu(databaseCreateMenu)
+
+		createTableMenuItem = databaseCreateMenu.addAction(QIcon('../resources/icons/table.png'), 'Table')
+		createTableMenuItem.setIconVisibleInMenu(True)
+		createTableMenuItem.triggered.connect(self.createTableAction)
+		databaseMenu.exec_(self.mainWindow.databaseInfoTable.viewport().mapToGlobal(point))
 
 	def addDbServer(self, server):
 		"""
@@ -156,3 +174,6 @@ class MainApplicationWindow(QMainWindow):
 		@type name: str
 		"""
 		self.mainWindow.twMachineTabs.addTab(tab, name, icon)
+
+	def createTableAction(self):
+		print 'Create a table!'
