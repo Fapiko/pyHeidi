@@ -177,4 +177,10 @@ class MainApplicationWindow(QMainWindow):
 		self.mainWindow.twMachineTabs.addTab(tab, name, icon)
 
 	def createTableAction(self):
+		self.showTableTab()
+		machineTabs = self.mainWindow.twMachineTabs
+		tableTab = self.mainWindow.tableTab
+
+		machineTabs.setTabText(machineTabs.indexOf(tableTab), 'Table: [Untitled]')
+		machineTabs.setCurrentWidget(tableTab)
 		print 'Create a table!'

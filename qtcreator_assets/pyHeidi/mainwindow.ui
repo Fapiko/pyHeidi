@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1202</width>
-    <height>603</height>
+    <width>1200</width>
+    <height>849</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -343,170 +343,238 @@
          <attribute name="title">
           <string>Table: </string>
          </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_5">
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>Columns:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="addColumnButton">
-              <property name="text">
-               <string>Add Column</string>
-              </property>
-              <property name="icon">
-               <iconset resource="resources.qrc">
-                <normaloff>:/icons/resources/icons/add.png</normaloff>:/icons/resources/icons/add.png</iconset>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="addColumnButton_2">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Remove Column</string>
-              </property>
-              <property name="icon">
-               <iconset resource="resources.qrc">
-                <normaloff>:/icons/resources/icons/delete.png</normaloff>:/icons/resources/icons/delete.png</iconset>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="addColumnButton_3">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Up</string>
-              </property>
-              <property name="icon">
-               <iconset resource="resources.qrc">
-                <normaloff>:/icons/resources/icons/resultset_up.png</normaloff>:/icons/resources/icons/resultset_up.png</iconset>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="addColumnButton_4">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Down</string>
-              </property>
-              <property name="icon">
-               <iconset resource="resources.qrc">
-                <normaloff>:/icons/resources/icons/resultset_down.png</normaloff>:/icons/resources/icons/resultset_down.png</iconset>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QTableWidget" name="tableInfoTable">
-            <property name="selectionMode">
-             <enum>QAbstractItemView::SingleSelection</enum>
+           <widget class="QSplitter" name="splitter_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
             </property>
-            <property name="selectionBehavior">
-             <enum>QAbstractItemView::SelectRows</enum>
-            </property>
-            <attribute name="verticalHeaderVisible">
+            <property name="childrenCollapsible">
              <bool>false</bool>
-            </attribute>
-            <column>
-             <property name="text">
-              <string>#</string>
+            </property>
+            <widget class="QTabWidget" name="tableTabs">
+             <property name="currentIndex">
+              <number>0</number>
              </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Name</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Datatype</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Length/Set</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Unsigned</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Allow NULL</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Zerofill</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Default</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Comment</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Collation</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Expression</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Virtuality</string>
-             </property>
-            </column>
+             <widget class="QWidget" name="tableTabsBasic">
+              <attribute name="icon">
+               <iconset resource="resources.qrc">
+                <normaloff>:/icons/resources/icons/table.png</normaloff>:/icons/resources/icons/table.png</iconset>
+              </attribute>
+              <attribute name="title">
+               <string>Basic</string>
+              </attribute>
+              <layout class="QHBoxLayout" name="horizontalLayout_5">
+               <item>
+                <layout class="QGridLayout" name="gridLayout_3">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_2">
+                   <property name="text">
+                    <string>Name:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLineEdit" name="tableName"/>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_3">
+                   <property name="text">
+                    <string>Comment:</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QPlainTextEdit" name="tableComment"/>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+              <zorder>label_3</zorder>
+              <zorder>label_2</zorder>
+              <zorder>tableName</zorder>
+              <zorder>tableComment</zorder>
+              <zorder></zorder>
+             </widget>
+            </widget>
+            <widget class="QWidget" name="">
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <item>
+               <layout class="QHBoxLayout" name="_2">
+                <item>
+                 <widget class="QPushButton" name="addColumnButton">
+                  <property name="text">
+                   <string>Add Column</string>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="resources.qrc">
+                    <normaloff>:/icons/resources/icons/add.png</normaloff>:/icons/resources/icons/add.png</iconset>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="addColumnButton_2">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="text">
+                   <string>Remove Column</string>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="resources.qrc">
+                    <normaloff>:/icons/resources/icons/delete.png</normaloff>:/icons/resources/icons/delete.png</iconset>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="addColumnButton_3">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="text">
+                   <string>Up</string>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="resources.qrc">
+                    <normaloff>:/icons/resources/icons/resultset_up.png</normaloff>:/icons/resources/icons/resultset_up.png</iconset>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="addColumnButton_4">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="text">
+                   <string>Down</string>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="resources.qrc">
+                    <normaloff>:/icons/resources/icons/resultset_down.png</normaloff>:/icons/resources/icons/resultset_down.png</iconset>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label">
+                  <property name="text">
+                   <string>Columns:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QTableWidget" name="tableInfoTable">
+                <property name="selectionMode">
+                 <enum>QAbstractItemView::SingleSelection</enum>
+                </property>
+                <property name="selectionBehavior">
+                 <enum>QAbstractItemView::SelectRows</enum>
+                </property>
+                <attribute name="verticalHeaderVisible">
+                 <bool>false</bool>
+                </attribute>
+                <column>
+                 <property name="text">
+                  <string>#</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Name</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Datatype</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Length/Set</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Unsigned</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Allow NULL</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Zerofill</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Default</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Comment</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Collation</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Expression</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Virtuality</string>
+                 </property>
+                </column>
+               </widget>
+              </item>
+             </layout>
+             <zorder>tableInfoTable</zorder>
+            </widget>
            </widget>
           </item>
          </layout>
+         <zorder>tableInfoTable</zorder>
+         <zorder>label</zorder>
+         <zorder>tableTabs</zorder>
+         <zorder></zorder>
+         <zorder>horizontalLayoutWidget</zorder>
         </widget>
        </widget>
       </widget>
@@ -530,7 +598,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1202</width>
+     <width>1200</width>
      <height>25</height>
     </rect>
    </property>
