@@ -393,17 +393,20 @@
                 </layout>
                </item>
               </layout>
-              <zorder>label_3</zorder>
-              <zorder>label_2</zorder>
-              <zorder>tableName</zorder>
-              <zorder>tableComment</zorder>
               <zorder></zorder>
              </widget>
             </widget>
-            <widget class="QWidget" name="">
+            <widget class="QWidget" name="layoutWidget">
              <layout class="QVBoxLayout" name="verticalLayout_5">
               <item>
                <layout class="QHBoxLayout" name="_2">
+                <item>
+                 <widget class="QLabel" name="label">
+                  <property name="text">
+                   <string>Columns:</string>
+                  </property>
+                 </widget>
+                </item>
                 <item>
                  <widget class="QPushButton" name="addColumnButton">
                   <property name="text">
@@ -419,7 +422,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="addColumnButton_2">
+                 <widget class="QPushButton" name="removeColumnButton">
                   <property name="enabled">
                    <bool>false</bool>
                   </property>
@@ -436,7 +439,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="addColumnButton_3">
+                 <widget class="QPushButton" name="moveColumnUpButton">
                   <property name="enabled">
                    <bool>false</bool>
                   </property>
@@ -453,7 +456,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="addColumnButton_4">
+                 <widget class="QPushButton" name="moveColumnDownButton">
                   <property name="enabled">
                    <bool>false</bool>
                   </property>
@@ -466,13 +469,6 @@
                   </property>
                   <property name="flat">
                    <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label">
-                  <property name="text">
-                   <string>Columns:</string>
                   </property>
                  </widget>
                 </item>
@@ -565,16 +561,10 @@
                </widget>
               </item>
              </layout>
-             <zorder>tableInfoTable</zorder>
             </widget>
            </widget>
           </item>
          </layout>
-         <zorder>tableInfoTable</zorder>
-         <zorder>label</zorder>
-         <zorder>tableTabs</zorder>
-         <zorder></zorder>
-         <zorder>horizontalLayoutWidget</zorder>
         </widget>
        </widget>
       </widget>

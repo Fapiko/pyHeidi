@@ -4,6 +4,7 @@ from ui.ui_mainwindow import Ui_MainWindow
 from database.DatabaseServer import DatabaseServer
 import re
 from mysql_syntax_highlighter import MysqlSyntaxHighlighter
+from ui.main_window.table_tab import TableTab
 
 class MainApplicationWindow(QMainWindow):
 	def __init__(self, configDb):
@@ -45,6 +46,8 @@ class MainApplicationWindow(QMainWindow):
 		self.restoreSizePreferences()
 		self.show()
 
+		self.tableTab = TableTab(self)
+
 		databaseInfoTable.setContextMenuPolicy(Qt.CustomContextMenu)
 		databaseInfoTable.customContextMenuRequested.connect(self.databaseContextMenu)
 
@@ -59,7 +62,7 @@ class MainApplicationWindow(QMainWindow):
 
 		createTableMenuItem = databaseCreateMenu.addAction(QIcon('../resources/icons/table.png'), 'Table')
 		createTableMenuItem.setIconVisibleInMenu(True)
-		createTableMenuItem.triggered.connect(self.createTableAction)
+		createTableMenuItem.triggered.connect(self.tableTab.createTableAction)
 		databaseMenu.exec_(self.mainWindow.databaseInfoTable.viewport().mapToGlobal(point))
 
 	def addDbServer(self, server):
@@ -175,12 +178,3 @@ class MainApplicationWindow(QMainWindow):
 		@type name: str
 		"""
 		self.mainWindow.twMachineTabs.addTab(tab, name, icon)
-
-	def createTableAction(self):
-		self.showTableTab()
-		machineTabs = self.mainWindow.twMachineTabs
-		tableTab = self.mainWindow.tableTab
-
-		machineTabs.setTabText(machineTabs.indexOf(tableTab), 'Table: [Untitled]')
-		machineTabs.setCurrentWidget(tableTab)
-		print 'Create a table!'
