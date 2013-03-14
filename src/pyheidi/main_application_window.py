@@ -53,7 +53,8 @@ class MainApplicationWindow(QMainWindow):
 		@type point: QPoint
 		"""
 		databaseMenu = QMenu()
-		databaseCreateMenu = QMenu('Create Item')
+		databaseCreateMenu = databaseMenu.addMenu(QIcon('../resources/icons/application_form_add.png'), 'Create new')
+		databaseCreateMenu.menuAction().setIconVisibleInMenu(True)
 		databaseMenu.addMenu(databaseCreateMenu)
 
 		createTableMenuItem = databaseCreateMenu.addAction(QIcon('../resources/icons/table.png'), 'Table')
