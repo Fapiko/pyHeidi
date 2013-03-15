@@ -5,22 +5,6 @@ from qthelpers.HeidiTreeWidgetItem import HeidiTreeWidgetItem
 from database.Database import Database
 
 class DatabaseServer:
-	"""
-	@type name: str
-	@type connection: MySQLdb.Connection
-	@type applicationWindow: MainApplicationWindow
-	@type databases: list
-	@type databaseTreeItem: HeidiTreeWidgetItem
-	@type currentDatabase: Database
-	"""
-	name = ""
-	connection = None
-	statusWindow = None
-	databases = []
-	databaseTreeItem = None
-	currentDatabase = None
-	applicationWindow = None
-
 	def __init__(self, name, connection, applicationWindow):
 		"""
 		@type name: str
@@ -30,6 +14,9 @@ class DatabaseServer:
 		self.name = name
 		self.connection = connection
 		self.applicationWindow = applicationWindow
+		self.databases = list()
+		self.currentDatabase = None
+		self.collations = list()
 
 		serverItem = HeidiTreeWidgetItem()
 		serverItem.setText(0, name)
@@ -125,3 +112,14 @@ class DatabaseServer:
 		for database in self.databases:
 			if database.name == name:
 				return database
+
+	def getCollations(self):
+		"""
+		@rtype: list
+		"""
+		if len(self.collations) == 0:
+			cursor = self.execute("SHOW COLLATION")
+			for collation in cursor:
+				self.collations.append(collation)
+
+		return self.collations

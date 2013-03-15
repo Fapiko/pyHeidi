@@ -343,226 +343,255 @@
          <attribute name="title">
           <string>Table: </string>
          </attribute>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
-           <widget class="QSplitter" name="splitter_3">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
+           <widget class="QTabWidget" name="tableTabs">
+            <property name="currentIndex">
+             <number>0</number>
             </property>
-            <property name="childrenCollapsible">
-             <bool>false</bool>
-            </property>
-            <widget class="QTabWidget" name="tableTabs">
-             <property name="currentIndex">
-              <number>0</number>
-             </property>
-             <widget class="QWidget" name="tableTabsBasic">
-              <attribute name="icon">
-               <iconset resource="resources.qrc">
-                <normaloff>:/icons/resources/icons/table.png</normaloff>:/icons/resources/icons/table.png</iconset>
-              </attribute>
-              <attribute name="title">
-               <string>Basic</string>
-              </attribute>
-              <layout class="QHBoxLayout" name="horizontalLayout_5">
-               <item>
-                <layout class="QGridLayout" name="gridLayout_3">
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_2">
-                   <property name="text">
-                    <string>Name:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QLineEdit" name="tableName"/>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_3">
-                   <property name="text">
-                    <string>Comment:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QPlainTextEdit" name="tableComment"/>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-              <zorder></zorder>
-             </widget>
-            </widget>
-            <widget class="QWidget" name="layoutWidget">
-             <layout class="QVBoxLayout" name="verticalLayout_5">
+            <widget class="QWidget" name="tableTabsBasic">
+             <attribute name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/icons/resources/icons/table.png</normaloff>:/icons/resources/icons/table.png</iconset>
+             </attribute>
+             <attribute name="title">
+              <string>Basic</string>
+             </attribute>
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
               <item>
-               <layout class="QHBoxLayout" name="_2">
-                <item>
-                 <widget class="QLabel" name="label">
+               <layout class="QGridLayout" name="gridLayout_3">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_2">
                   <property name="text">
-                   <string>Columns:</string>
+                   <string>Name:</string>
                   </property>
                  </widget>
                 </item>
-                <item>
-                 <widget class="QPushButton" name="addColumnButton">
-                  <property name="text">
-                   <string>Add Column</string>
-                  </property>
-                  <property name="icon">
-                   <iconset resource="resources.qrc">
-                    <normaloff>:/icons/resources/icons/add.png</normaloff>:/icons/resources/icons/add.png</iconset>
-                  </property>
-                  <property name="flat">
-                   <bool>true</bool>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="tableName">
+                  <property name="placeholderText">
+                   <string>Enter table name</string>
                   </property>
                  </widget>
                 </item>
-                <item>
-                 <widget class="QPushButton" name="removeColumnButton">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_3">
                   <property name="text">
-                   <string>Remove Column</string>
+                   <string>Comment:</string>
                   </property>
-                  <property name="icon">
-                   <iconset resource="resources.qrc">
-                    <normaloff>:/icons/resources/icons/delete.png</normaloff>:/icons/resources/icons/delete.png</iconset>
-                  </property>
-                  <property name="flat">
-                   <bool>true</bool>
+                  <property name="alignment">
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
                   </property>
                  </widget>
                 </item>
-                <item>
-                 <widget class="QPushButton" name="moveColumnUpButton">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
-                  <property name="text">
-                   <string>Up</string>
-                  </property>
-                  <property name="icon">
-                   <iconset resource="resources.qrc">
-                    <normaloff>:/icons/resources/icons/resultset_up.png</normaloff>:/icons/resources/icons/resultset_up.png</iconset>
-                  </property>
-                  <property name="flat">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="moveColumnDownButton">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
-                  <property name="text">
-                   <string>Down</string>
-                  </property>
-                  <property name="icon">
-                   <iconset resource="resources.qrc">
-                    <normaloff>:/icons/resources/icons/resultset_down.png</normaloff>:/icons/resources/icons/resultset_down.png</iconset>
-                  </property>
-                  <property name="flat">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>0</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                 </spacer>
+                <item row="1" column="1">
+                 <widget class="QPlainTextEdit" name="tableComment"/>
                 </item>
                </layout>
               </item>
-              <item>
-               <widget class="QTableWidget" name="tableInfoTable">
-                <property name="selectionMode">
-                 <enum>QAbstractItemView::SingleSelection</enum>
-                </property>
-                <property name="selectionBehavior">
-                 <enum>QAbstractItemView::SelectRows</enum>
-                </property>
-                <attribute name="verticalHeaderVisible">
-                 <bool>false</bool>
-                </attribute>
-                <column>
-                 <property name="text">
-                  <string>#</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>Name</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>Datatype</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>Length/Set</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>Unsigned</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>Allow NULL</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>Zerofill</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>Default</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>Comment</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>Collation</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>Expression</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>Virtuality</string>
-                 </property>
-                </column>
-               </widget>
-              </item>
              </layout>
+             <zorder></zorder>
             </widget>
            </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="_2">
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Columns:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="addColumnButton">
+              <property name="text">
+               <string>Add Column</string>
+              </property>
+              <property name="icon">
+               <iconset resource="resources.qrc">
+                <normaloff>:/icons/resources/icons/add.png</normaloff>:/icons/resources/icons/add.png</iconset>
+              </property>
+              <property name="flat">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="removeColumnButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Remove Column</string>
+              </property>
+              <property name="icon">
+               <iconset resource="resources.qrc">
+                <normaloff>:/icons/resources/icons/delete.png</normaloff>:/icons/resources/icons/delete.png</iconset>
+              </property>
+              <property name="flat">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="moveColumnUpButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Up</string>
+              </property>
+              <property name="icon">
+               <iconset resource="resources.qrc">
+                <normaloff>:/icons/resources/icons/resultset_up.png</normaloff>:/icons/resources/icons/resultset_up.png</iconset>
+              </property>
+              <property name="flat">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="moveColumnDownButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Down</string>
+              </property>
+              <property name="icon">
+               <iconset resource="resources.qrc">
+                <normaloff>:/icons/resources/icons/resultset_down.png</normaloff>:/icons/resources/icons/resultset_down.png</iconset>
+              </property>
+              <property name="flat">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QTableWidget" name="tableInfoTable">
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
+            <attribute name="verticalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
+            <column>
+             <property name="text">
+              <string>#</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Name</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Datatype</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Length/Set</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Unsigned</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Allow NULL</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Zerofill</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Default</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Comment</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Collation</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Expression</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Virtuality</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QPushButton" name="discardTableButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Discard</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="saveTableButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Save</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>

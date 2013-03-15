@@ -25,9 +25,10 @@ class MainApplication():
 		mainApplicationWindow = MainApplicationWindow(configDb)
 		mainApplicationWindow.hide()
 		sessionManager = SessionManager(mainApplicationWindow, configDb)
-		sessionManager.show()
+		# sessionManager.show()
 
 		self.mainApplicationWindow = mainApplicationWindow
+		self.sessionManager = sessionManager
 
 		app.exec_()
 

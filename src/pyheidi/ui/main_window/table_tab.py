@@ -14,19 +14,30 @@ class TableTab:
 		mainWindow.removeColumnButton.clicked.connect(self.removeCurrentColumnRow)
 		mainWindow.moveColumnDownButton.clicked.connect(self.moveCurrentColumnDown)
 		mainWindow.moveColumnUpButton.clicked.connect(self.moveCurrentColumnUp)
+		mainWindow.discardTableButton.clicked.connect(self.discardChanges)
+		mainWindow.saveTableButton.clicked.connect(self.saveChanges)
+		mainWindow.tableName.textEdited.connect(self.checkSaveDiscardState)
 
 	def createTableAction(self):
-		mainWindow = self.applicationWindow.mainWindow
-		self.applicationWindow.showTableTab()
+		applicationWindow = self.applicationWindow
+		mainWindow = applicationWindow.mainWindow
+
+		applicationWindow.showTableTab()
 		machineTabs = mainWindow.twMachineTabs
 		tableTab = mainWindow.tableTab
 
 		machineTabs.setTabText(machineTabs.indexOf(tableTab), 'Table: [Untitled]')
 		machineTabs.setCurrentWidget(tableTab)
-		print 'Create a table!'
+
+		self.previousState = {
+			'table_name': '',
+			'columns': None
+		}
 
 	def addColumnRow(self):
-		columnsTable = self.applicationWindow.mainWindow.tableInfoTable
+		applicationWindow = self.applicationWindow
+		columnsTable = applicationWindow.mainWindow.tableInfoTable
+		collations = applicationWindow.currentDatabase.server.getCollations()
 		index = columnsTable.rowCount()
 
 		dataTypes = QComboBox()
@@ -44,6 +55,14 @@ class TableTab:
 		dataTypes.insertSeparator(dataTypes.count())
 		dataTypes.addItems(self.buildQStringList(['ENUM', 'SET']))
 
+		collationsCombo = QComboBox()
+		collationsCombo.addItem('')
+		for collation in collations:
+			collationsCombo.addItem(collation['Collation'])
+
+		virtualityCombo = QComboBox()
+		virtualityCombo.addItems(self.buildQStringList(['', 'VIRTUAL', 'PERSISTENT']))
+
 		nullCheckBox = QCheckBox()
 		nullCheckBox.setCheckState(Qt.Checked)
 
@@ -55,7 +74,11 @@ class TableTab:
 		columnsTable.setCellWidget(index, 5, nullCheckBox)
 		columnsTable.setCellWidget(index, 6, QCheckBox())
 		columnsTable.setItem(index, 7, QTableWidgetItem('No default'))
-		print 'add column!'
+		columnsTable.setCellWidget(index, 9, collationsCombo)
+
+		applicationWindow.mainWindow.removeColumnButton.setEnabled(True)
+		self.checkSaveDiscardState()
+
 
 	def buildQStringList(self, items):
 		"""
@@ -68,7 +91,9 @@ class TableTab:
 		return returnData
 
 	def removeCurrentColumnRow(self):
-		print 'remove current column!'
+		tableInfoTable = self.applicationWindow.mainWindow.tableInfoTable
+		tableInfoTable.removeRow(tableInfoTable.currentRow())
+		self.checkSaveDiscardState()
 
 	def moveCurrentColumnUp(self):
 		print 'move current column up!'
@@ -78,3 +103,33 @@ class TableTab:
 
 	def dataTypesSizeHint(self):
 		return QSize(300, 400)
+
+	def discardChanges(self):
+		print 'discard changes!'
+
+	def saveChanges(self):
+		print 'save changes!'
+
+	def checkSaveDiscardState(self):
+		mainWindow = self.applicationWindow.mainWindow
+		tableName = mainWindow.tableName.text()
+		columnCount = mainWindow.tableInfoTable.rowCount()
+		if tableName != '' and columnCount > 0:
+			mainWindow.saveTableButton.setEnabled(True)
+		else:
+			mainWindow.saveTableButton.setEnabled(False)
+
+		showDiscardButton = False
+		previousState = self.previousState
+		for key in previousState:
+			if key == 'table_name':
+				if tableName != previousState['table_name']:
+					showDiscardButton = True
+					break
+			elif key == 'columns':
+				if previousState['columns'] is None and columnCount > 0:
+					showDiscardButton = True
+					break
+
+		mainWindow.discardTableButton.setEnabled(showDiscardButton)
+
