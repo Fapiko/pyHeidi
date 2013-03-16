@@ -1,119 +1,116 @@
-from PyQt4.QtCore import Qt, QString
-from PyQt4.QtGui import QIcon, QMainWindow, QResizeEvent, QTreeWidgetItem
+from PyQt4.QtCore import Qt, QPoint
+from PyQt4.QtGui import QColor, QIcon, QMainWindow, QMenu, QResizeEvent
 from ui.ui_mainwindow import Ui_MainWindow
 from database.DatabaseServer import DatabaseServer
-from qthelpers.HeidiTreeWidgetItem import HeidiTreeWidgetItem
-import sqlite3
+import re
+from mysql_syntax_highlighter import MysqlSyntaxHighlighter
+from ui.main_window.table_tab import TableTab
 
 class MainApplicationWindow(QMainWindow):
-	"""
-	@type configDb: sqlite3.Connection
-	@type obeyResize: bool
-	@type servers: list
-	"""
-	configDb = None
-	servers = []
-	obeyResize = False
-
 	def __init__(self, configDb):
+		self.obeyResize = False
+		self.servers = []
 		self.configDb = configDb
 
 		QMainWindow.__init__(self)
 		mainWindow = Ui_MainWindow()
 		mainWindow.setupUi(self)
 
+		databaseInfoTable = mainWindow.databaseInfoTable
 		mainWindow.actionRefresh.activated.connect(self.actionRefresh)
-		mainWindow.databaseTree.currentItemChanged.connect(self.updateCurrentDatabase)
+		mainWindow.databaseTree.currentItemChanged.connect(self.updateDatabaseTreeSelection)
+		databaseInfoTable.horizontalHeader().sectionResized.connect(self.databaseTreeColumnResized)
+		mainWindow.databaseTree.itemExpanded.connect(self.databaseTreeItemExpanded)
+		mainWindow.txtStatus.setTextColor(QColor('darkBlue'))
+		mainWindow.twMachineTabs.removePage(mainWindow.databaseTab)
+		mainWindow.twMachineTabs.removePage(mainWindow.tableTab)
+
+		# mainWindow.txtStatus.append("# Single Comment")
+		# mainWindow.txtStatus.append("/* Multi\nLine Comment")
+		# mainWindow.txtStatus.append("*/")
+		# mainWindow.txtStatus.append("SHOW CREATE TABLE FOR `apiclarify`.`facepalm`;")
+		# mainWindow.txtStatus.append("/* multi-line\n commentz */ SHOW CREATE TABLE FOR `apiclarify`.`facepalm`;")
+		# mainWindow.txtStatus.append("/* comment */ SHOW CREATE TABLE FOR `apiclarify`.`facepalm`; /* commentz */")
+		# mainWindow.txtStatus.append("/* comment SHOW CREATE TABLE FOR `apiclarify`.`facepalm`; commentz */")
+		# mainWindow.txtStatus.append("/* comment \nSHOW CREATE TABLE FOR `apiclarify`.`facepalm`; commentz */")
+		# mainWindow.txtStatus.append("SELECT * FROM test_command;")
+		# mainWindow.txtStatus.append("SHOW TABLE STATUS; # Inline comment")
+		# mainWindow.txtStatus.append("/* comment */ SHOW DATABASES; /* commentz */")
+		# mainWindow.txtStatus.append("SHOW DATABASEN; /* start multiline")
+		# mainWindow.txtStatus.append("commenting */")
+		# mainWindow.txtStatus.append('SELECT * FROM facepalm; /* i can haz comment? */')
+
+		self.logHighlighter = MysqlSyntaxHighlighter(mainWindow.txtStatus.document())
 
 		self.mainWindow = mainWindow
+		self.restoreSizePreferences()
 		self.show()
 
-		cursor = configDb.cursor()
-		cursor.execute("SELECT * FROM settings WHERE name = 'mainwindow.width' OR name = 'mainwindow.height'")
-		for row in cursor:
-			if row['name'] == 'mainwindow.width':
-				width = int(row['value'])
-			elif row['name'] == 'mainwindow.height':
-				height = int(row['value'])
+		self.tableTab = TableTab(self)
 
-		self.resize(width, height)
-		self.obeyResize = True
+		databaseInfoTable.setContextMenuPolicy(Qt.CustomContextMenu)
+		databaseInfoTable.customContextMenuRequested.connect(self.databaseContextMenu)
 
-	def addDatabase(self, server, name):
+	def databaseContextMenu(self, point):
 		"""
-		@type server: DatabaseServer
-		@type name: str
+		@type point: QPoint
 		"""
-		database = HeidiTreeWidgetItem()
-		database.setText(0, name)
-		database.setIcon(0, QIcon('../resources/icons/database.png'))
-		database.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
-		database.itemType = 'database'
+		databaseMenu = QMenu()
+		databaseCreateMenu = databaseMenu.addMenu(QIcon('../resources/icons/application_form_add.png'), 'Create new')
+		databaseCreateMenu.menuAction().setIconVisibleInMenu(True)
+		databaseMenu.addMenu(databaseCreateMenu)
 
-		serverItem = self.mainWindow.databaseTree.topLevelItem(server.treeIndex)
-		serverItem.addChild(database)
-		serverItem.setExpanded(True)
+		createTableMenuItem = databaseCreateMenu.addAction(QIcon('../resources/icons/table.png'), 'Table')
+		createTableMenuItem.setIconVisibleInMenu(True)
+		createTableMenuItem.triggered.connect(self.tableTab.createTableAction)
+		databaseMenu.exec_(self.mainWindow.databaseInfoTable.viewport().mapToGlobal(point))
 
 	def addDbServer(self, server):
 		"""
 		@type server: DatabaseServer
 		"""
-		serverItem = HeidiTreeWidgetItem()
-		serverItem.setText(0, server.name)
-		serverItem.setIcon(0, QIcon('../resources/icons/server.png'))
-		serverItem.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
-		serverItem.setChildIndicatorPolicy(QTreeWidgetItem.DontShowIndicatorWhenChildless)
-		serverItem.itemType = 'server'
-
-		self.mainWindow.databaseTree.addTopLevelItem(serverItem)
-		server.treeIndex = self.mainWindow.databaseTree.indexOfTopLevelItem(serverItem)
 		self.servers.append(server)
-
-		self.reloadServerDatabases(server)
-		self.refreshProcessList(server)
-
-	def reloadServerDatabases(self, server):
-		"""
-		@type server: DatabaseServer
-		"""
-		cursor = server.connection.cursor()
-
-		cursor.execute('SHOW DATABASES')
-		for row in cursor:
-			self.addDatabase(server, row[0])
-
-	def refreshProcessList(self, server):
-		"""
-		@type server: DatabaseServer
-		"""
-		processListTree = self.mainWindow.processListTree
-		processListTree.clear()
-
-		cursor = server.connection.cursor()
-		cursor.execute('SHOW FULL PROCESSLIST')
-		numProcesses = 0
-		for row in cursor:
-			numProcesses += 1
-			processItem = QTreeWidgetItem()
-			for index, field in enumerate(row):
-				if field is not None:
-					if type(field) is not str:
-						field = str(field)
-					processItem.setText(index, field)
-
-				processListTree.addTopLevelItem(processItem)
-
-		self.mainWindow.processListTab.setTabText(0, "Process List (%d)" % numProcesses)
+		self.currentServer = server
+		server.reloadDatabases()
+		server.refreshProcessList()
 
 	def actionRefresh(self):
 		# We'll eventually need to add logic to detect what page we're currently on
-		self.refreshProcessList(self.servers[0])
+		self.currentServer.refreshProcessList()
 
-	def updateCurrentDatabase(self, currentDatabase, previousDatabase):
+	def updateDatabaseTreeSelection(self, currentItem, previousItem):
 		"""
-		@type currentDatabase: QTreeWidgetItem
-		@type previousDatabase: QTreeWidgetItem
+		@type currentItem: HeidiTreeWidgetItem
+		@type previousItem: HeidiTreeWidgetItem
 		"""
+		if currentItem.itemType == 'database':
+			self.updateCurrentDatabase(currentItem)
+		elif currentItem.itemType == 'server':
+			# Remove any tabs not dealing with server specific stuff
+			mainWindow = self.mainWindow
+			mainWindow.twMachineTabs.removePage(mainWindow.databaseTab)
+			mainWindow.twMachineTabs.removePage(mainWindow.tableTab)
+
+			# Initialize the machine tab
+			machineTab = self.mainWindow.machineTab
+			twMachineTabs = self.mainWindow.twMachineTabs
+			twMachineTabs.setTabText(twMachineTabs.indexOf(machineTab), "Host: %s" % currentItem.text(0))
+			twMachineTabs.setCurrentWidget(self.mainWindow.machineTab)
+		elif currentItem.itemType == 'table':
+			self.updateCurrentDatabase(currentItem.parent())
+			self.showTableTab()
+			tableName = currentItem.text(0)
+			self.currentDatabase.setCurrentTable(self.currentDatabase.findTableByName(tableName))
+
+	def updateCurrentDatabase(self, databaseTreeItem):
+		"""
+		@type databaseTreeItem: HeidiTreeWidgetItem
+		"""
+		dbName = databaseTreeItem.text(0)
+		server = self.getServer(0)
+		database = server.findDatabaseByName(dbName)
+		self.currentDatabase = database
+		server.setCurrentDatabase(database)
 
 	def resizeEvent(self, resizeEvent):
 		"""
@@ -121,6 +118,63 @@ class MainApplicationWindow(QMainWindow):
 		"""
 		if self.obeyResize:
 			cursor = self.configDb.cursor()
-			cursor.execute("UPDATE settings SET value = ? WHERE name = 'mainwindow.width'", [self.width()])
-			cursor.execute("UPDATE settings SET value = ? WHERE name = 'mainwindow.height'", [self.height()])
+			cursor.execute("REPLACE INTO settings (name, value) VALUES ('mainwindow.width', ?)", [self.width()])
+			cursor.execute("REPLACE INTO settings (name, value) VALUES ('mainwindow.height', ?)", [self.height()])
 			self.configDb.commit()
+
+	# Pretty much just using this getter for type hinting as PyCharm doesn't
+	# seem to support inline hints afaik
+	def getServer(self, index):
+		"""
+		@type index: int
+		@rtype: DatabaseServer
+		"""
+		return self.servers[index]
+
+	def databaseTreeColumnResized(self, index, previousWidth, width):
+		# Last item auto stretches to take up the rest of the table
+		if index != 7:
+			cursor = self.configDb.cursor()
+			cursor.execute("REPLACE INTO `settings` (name, value) VALUES ('databaseinfotable.%d.width', ?)" % index, [width])
+
+	def restoreSizePreferences(self):
+		cursor = self.configDb.cursor()
+		cursor.execute("SELECT * FROM settings")
+
+		mainWindowHeight = self.height()
+		mainWindowWidth = self.width()
+		dbInfoTableRegex = re.compile("^databaseinfotable\.[0-7]\.width")
+		for row in cursor:
+			if row['name'] == 'mainwindow.width':
+				mainWindowWidth = int(row['value'])
+			elif row['name'] == 'mainwindow.height':
+				mainWindowHeight = int(row['value'])
+			elif dbInfoTableRegex.match(row['name']):
+				index = int(row['name'].split('.')[1])
+				self.mainWindow.databaseInfoTable.setColumnWidth(index, int(row['value']))
+
+		self.resize(mainWindowWidth, mainWindowHeight)
+		self.obeyResize = True
+
+	def databaseTreeItemExpanded(self, item):
+		"""
+		@type item: HeidiTreeWidgetItem
+		"""
+		if item.itemType == 'database':
+			database = self.currentServer.findDatabaseByName(item.text(0))
+			if len(database.tables) == 0:
+				database.refreshTables()
+
+	def showDatabaseTab(self):
+		self.showTab(self.mainWindow.databaseTab, QIcon('../resources/icons/database.png'), 'Database:')
+
+	def showTableTab(self):
+		self.showTab(self.mainWindow.tableTab, QIcon('../resources/icons/table.png'), 'Table:')
+
+	def showTab(self, tab, name, icon):
+		"""
+		@type tab: QTabWidget
+		@type icon: QIcon
+		@type name: str
+		"""
+		self.mainWindow.twMachineTabs.addTab(tab, name, icon)

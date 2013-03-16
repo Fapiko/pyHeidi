@@ -11,24 +11,24 @@ class MainApplication():
 	configDb = None
 
 	def __init__(self):
-		configDb = sqlite3.connect('../userdata.db')
+		self.configDb = sqlite3.connect('../userdata.db')
+		configDb = self.configDb
 		configDb.row_factory = sqlite3.Row
-
-		app = QtGui.QApplication(sys.argv)
-		mainApplicationWindow = MainApplicationWindow(configDb)
-		mainApplicationWindow.hide()
-		sessionManager = SessionManager(mainApplicationWindow, configDb)
-		sessionManager.show()
-
-		self.mainApplicationWindow = mainApplicationWindow
-
-		self.configDb = sessionManager.conn
-		cursor = self.configDb.cursor()
+		cursor = configDb.cursor()
 
 		# Ensure settings table exists and create it if not
 		cursor.execute("SELECT name FROM sqlite_master WHERE Type='table' and name = 'settings'")
 		if cursor.fetchone() is None:
 			self.createSettingsTable()
+
+		app = QtGui.QApplication(sys.argv)
+		mainApplicationWindow = MainApplicationWindow(configDb)
+		mainApplicationWindow.hide()
+		sessionManager = SessionManager(mainApplicationWindow, configDb)
+		# sessionManager.show()
+
+		self.mainApplicationWindow = mainApplicationWindow
+		self.sessionManager = sessionManager
 
 		app.exec_()
 
@@ -38,12 +38,9 @@ class MainApplication():
 		cursor.execute("""
 			CREATE TABLE settings(
 				id INTEGER PRIMARY KEY,
-				name TEXT,
+				name TEXT UNIQUE,
 				value TEXT
 			);
 		""")
-
-		cursor.execute("INSERT INTO settings (name, value) VALUES ('mainwindow.width', ?)", [self.mainApplicationWindow.width()])
-		cursor.execute("INSERT INTO settings (name, value) VALUES ('mainwindow.height', ?)", [self.mainApplicationWindow.height()])
 
 		self.configDb.commit()

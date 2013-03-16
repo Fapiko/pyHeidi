@@ -1,11 +1,13 @@
 import atexit
 import sys
 import MySQLdb
+import MySQLdb.cursors
 import _mysql_exceptions
 from database.DatabaseServer import DatabaseServer
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtGui import QMessageBox, QShortcut
 from sqlite3 import *
+import time
 
 class SessionManager(QtGui.QDialog):
 	def __init__(self, mainApplicationWindow, configDb):
@@ -28,6 +30,8 @@ class SessionManager(QtGui.QDialog):
 		self.treeServerManager.setCurrentItem(self.treeServerManager.topLevelItem(0))
 		self.mainApplicationWindow = mainApplicationWindow
 
+		self.show()
+		self.slotButtonOpenClicked()
 			
 	def initUI(self):
 		# No session label... TODO: should really move this text to resource file
@@ -268,8 +272,8 @@ class SessionManager(QtGui.QDialog):
 
 		try:
 			dbConnection = MySQLdb.connect(host = session['hostname'], user = session['username'], passwd = session['password'],
-				port = session['port'])
-			dbServer = DatabaseServer(session['name'], dbConnection)
+				port = session['port'], cursorclass = MySQLdb.cursors.DictCursor)
+			dbServer = DatabaseServer(session['name'], dbConnection, applicationWindow)
 			applicationWindow.show()
 			applicationWindow.addDbServer(dbServer)
 			self.hide()
