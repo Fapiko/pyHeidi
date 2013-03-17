@@ -2,8 +2,8 @@ from PyQt4.QtGui import QIcon
 from qthelpers.HeidiTreeWidgetItem import HeidiTreeWidgetItem
 
 class Table:
-	def __init__(self, name, database, rows = None, size = None, created = None,
-			updated = None, engine = None, comment = None):
+	def __init__(self, name, database = None, rows = None, size = None, created = None,
+			updated = None, engine = None, comment = None, columns = None):
 		"""
 		@type name: str
 		@type database: Database
@@ -13,15 +13,8 @@ class Table:
 		@type updated: datetime
 		@type engine: str
 		@type comment: str
+		@type columns: dict
 		"""
-		self.database = database
-		databaseTreeItem = database.getDatabaseTreeItem()
-		tableTreeItem = HeidiTreeWidgetItem()
-		tableTreeItem.itemType = 'table'
-		tableTreeItem.setIcon(0, QIcon('../resources/icons/table.png'))
-		tableTreeItem.setText(0, name)
-		databaseTreeItem.addChild(tableTreeItem)
-
 		self.name = name
 		self.created = created
 		self.updated = updated
@@ -29,8 +22,11 @@ class Table:
 		self.size = size
 		self.engine = engine
 		self.comment = comment
+		self.columns = columns
+		self.database = database
+		if database is not None:
+			self.setDabase(database)
 
-		database.tables.append(self)
 
 	# Just for type hinting... really need to figure out how to fix class
 	# attribute type hints :(
@@ -59,3 +55,24 @@ class Table:
 	def setAsCurrentTable(self):
 		self.database.server.execute("SHOW CREATE TABLE `%s`.`%s`" %
 									 (self.database.name, self.name))
+
+	def setDabase(self, database):
+		self.database = database
+		databaseTreeItem = database.getDatabaseTreeItem()
+		tableTreeItem = HeidiTreeWidgetItem()
+		tableTreeItem.itemType = 'table'
+		tableTreeItem.setIcon(0, QIcon('../resources/icons/table.png'))
+		tableTreeItem.setText(0, self.name)
+		databaseTreeItem.addChild(tableTreeItem)
+		database.tables.append(self)
+
+	def addColumn(self, name, dataType = None, length = None, unsigned = False,
+				  allowsNULL = True, zerofill = False, default = None, comment = "",
+				  collation = None, expression = "", virtuality = ""):
+		self.columns['name'] = dict
+
+	def getColumnString(self):
+		return
+
+	def __str__(self):
+		createString = "CREATE TABLE `%s` %s\nCOLLATE='%s'\nENGINE=%s" % (self.name)

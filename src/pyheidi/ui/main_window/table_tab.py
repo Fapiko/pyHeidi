@@ -1,5 +1,6 @@
 from PyQt4.QtGui import QCheckBox, QComboBox, QScrollArea, QSizePolicy, QTableWidgetItem
 from PyQt4.QtCore import Qt, QSize, QStringList
+from database.Table import Table
 
 class TableTab:
 	def __init__(self, applicationWindow):
@@ -8,6 +9,7 @@ class TableTab:
 		"""
 		self.applicationWindow = applicationWindow
 		self.tableTab = applicationWindow.mainWindow.tableTab
+		self.table = Table("", None)
 
 		mainWindow = applicationWindow.mainWindow
 		mainWindow.addColumnButton.clicked.connect(self.addColumnRow)
