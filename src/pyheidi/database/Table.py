@@ -13,7 +13,7 @@ class Table:
 		@type updated: datetime
 		@type engine: str
 		@type comment: str
-		@type columns: dict
+		@type columns: list
 		"""
 		self.name = name
 		self.created = created
@@ -22,10 +22,15 @@ class Table:
 		self.size = size
 		self.engine = engine
 		self.comment = comment
-		self.columns = columns
+
 		self.database = database
 		if database is not None:
 			self.setDabase(database)
+
+		if columns is not None:
+			self.columns = columns
+		else:
+			self.columns = []
 
 
 	# Just for type hinting... really need to figure out how to fix class

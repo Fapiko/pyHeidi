@@ -40,7 +40,7 @@ class TableTab:
 	def addColumnRow(self):
 		applicationWindow = self.applicationWindow
 		columnsTable = applicationWindow.mainWindow.tableInfoTable
-		columnsTable.cellChanged.connect(self.columnChanged)
+		columnsTable.cellChanged.connect(self.columnItemChanged)
 		collations = applicationWindow.currentDatabase.server.getCollations()
 		index = columnsTable.rowCount()
 
@@ -92,7 +92,6 @@ class TableTab:
 		columnsTable.setItem(index, 7, QTableWidgetItem('No default'))
 		columnsTable.setCellWidget(index, 9, collationsCombo)
 		columnsTable.setCellWidget(index, 11, virtualityCombo)
-
 		applicationWindow.mainWindow.removeColumnButton.setEnabled(True)
 		column = Column(name = columnsTable.item(index, 1).text(),
 						dataType = dataTypes.currentText(),
@@ -105,7 +104,7 @@ class TableTab:
 						collation = collationsCombo.currentText(),
 						# expression = columnsTable.item(index, 10).text(),
 						virtuality = virtualityCombo.currentText())
-		print column
+		self.table.columns.append(column)
 		self.checkSaveDiscardState()
 
 
@@ -163,16 +162,58 @@ class TableTab:
 		mainWindow.discardTableButton.setEnabled(showDiscardButton)
 
 	def dataTypeChanged(self, dataType):
-		print "Data type changed: " + str(dataType)
+		columnsTable = self.applicationWindow.mainWindow.tableInfoTable
+		dataType = columnsTable.cellWidget(0, 2).itemText(dataType)
 
-	def columnChanged(self, row, column):
-		print "Column changed (%s, %s)" % (row, column)
+		for i in xrange(columnsTable.rowCount()):
+			if self.table.columns[i].dataType != columnsTable.cellWidget(i, 2).currentText():
+				self.table.columns[i].dataType = dataType
+				break
+
+	def columnItemChanged(self, row, column):
+		# This if allows us to avoid change events triggered from initially
+		# populating the row in the GUI
+		if row < len(self.table.columns):
+			columnsTable = self.applicationWindow.mainWindow.tableInfoTable
+			tableColumn = self.table.columns[row]
+
+			text = columnsTable.item(row, column).text()
+			if column == 1:
+				tableColumn.name = text
+			elif column == 3:
+				tableColumn.setLength(text)
+			elif column == 7:
+				tableColumn.setDefault(text)
+			elif column == 8:
+				tableColumn.comment = text
+			elif column == 10:
+				tableColumn.setExpression(text)
+
+			print tableColumn
 
 	def unsignedStateChanged(self, state):
-		print "Unsigned state changed %s" % state
+		columnsTable = self.applicationWindow.mainWindow.tableInfoTable
+
+		for i in xrange(columnsTable.rowCount()):
+			if self.table.columns[i].unsigned != columnsTable.cellWidget(i, 4).isChecked():
+				print self.table.columns[i]
+				self.table.columns[i].unsigned = state
+				print self.table.columns[i]
 
 	def nullStateChanged(self, state):
-		print "NULL state changed %s" % state
+		columnsTable = self.applicationWindow.mainWindow.tableInfoTable
+
+		for i in xrange(columnsTable.rowCount()):
+			if self.table.columns[i].allowsNull != columnsTable.cellWidget(i, 5).isChecked():
+				print self.table.columns[i]
+				self.table.columns[i].allowsNull = state
+				print self.table.columns[i]
 
 	def zerofillStateChanged(self, state):
-		print "zerofill state changed %s" % state
+		columnsTable = self.applicationWindow.mainWindow.tableInfoTable
+
+		for i in xrange(columnsTable.rowCount()):
+			if self.table.columns[i].zerofill != columnsTable.cellWidget(i, 6).isChecked():
+				print self.table.columns[i]
+				self.table.columns[i].zerofill = state
+				print self.table.columns[i]
