@@ -66,13 +66,8 @@ class Table:
 		databaseTreeItem.addChild(tableTreeItem)
 		database.tables.append(self)
 
-	def addColumn(self, name, dataType = None, length = None, unsigned = False,
-				  allowsNULL = True, zerofill = False, default = None, comment = "",
-				  collation = None, expression = "", virtuality = ""):
-		self.columns['name'] = dict
-
 	def getColumnString(self):
 		return
 
 	def __str__(self):
-		createString = "CREATE TABLE `%s` %s\nCOLLATE='%s'\nENGINE=%s" % (self.name)
+		createString = "CREATE TABLE `%s` %s\nCOLLATE='%s'\nENGINE=%s" % (self.name, self.getColumnString())

@@ -1,6 +1,7 @@
-from PyQt4.QtGui import QCheckBox, QComboBox, QScrollArea, QSizePolicy, QTableWidgetItem
+from PyQt4.QtGui import QCheckBox, QComboBox, QTableWidgetItem
 from PyQt4.QtCore import Qt, QSize, QStringList
 from database.Table import Table
+from database.column import Column
 
 class TableTab:
 	def __init__(self, applicationWindow):
@@ -39,6 +40,7 @@ class TableTab:
 	def addColumnRow(self):
 		applicationWindow = self.applicationWindow
 		columnsTable = applicationWindow.mainWindow.tableInfoTable
+		columnsTable.cellChanged.connect(self.columnChanged)
 		collations = applicationWindow.currentDatabase.server.getCollations()
 		index = columnsTable.rowCount()
 
@@ -56,6 +58,7 @@ class TableTab:
 		dataTypes.addItems(self.buildQStringList(['POINT', 'LINESTRING', 'POLYGON', 'GEOMETRY', 'MULTIPOINT', 'MULTILINESTRING', 'MULTIPOLYGON', 'GEOMETRYCOLLECTION']))
 		dataTypes.insertSeparator(dataTypes.count())
 		dataTypes.addItems(self.buildQStringList(['ENUM', 'SET']))
+		dataTypes.currentIndexChanged.connect(self.dataTypeChanged)
 
 		collationsCombo = QComboBox()
 		collationsCombo.addItem('')
@@ -65,20 +68,44 @@ class TableTab:
 		virtualityCombo = QComboBox()
 		virtualityCombo.addItems(self.buildQStringList(['', 'VIRTUAL', 'PERSISTENT']))
 
+		unsignedCheckBox = QCheckBox()
+		unsignedCheckBox.stateChanged.connect(self.unsignedStateChanged)
+
 		nullCheckBox = QCheckBox()
 		nullCheckBox.setCheckState(Qt.Checked)
+		nullCheckBox.stateChanged.connect(self.nullStateChanged)
+
+		zerofill = QCheckBox()
+		zerofill.stateChanged.connect(self.zerofillStateChanged)
+
+		columnIdField = QTableWidgetItem(str(index + 1))
+		columnIdField.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+		columnIdField.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
 
 		columnsTable.insertRow(index)
-		columnsTable.setItem(index, 0, QTableWidgetItem(str(index + 1)))
+		columnsTable.setItem(index, 0, columnIdField)
 		columnsTable.setItem(index, 1, QTableWidgetItem("Column %s" % (index + 1)))
 		columnsTable.setCellWidget(index, 2, dataTypes)
-		columnsTable.setCellWidget(index, 4, QCheckBox())
+		columnsTable.setCellWidget(index, 4, unsignedCheckBox)
 		columnsTable.setCellWidget(index, 5, nullCheckBox)
-		columnsTable.setCellWidget(index, 6, QCheckBox())
+		columnsTable.setCellWidget(index, 6, zerofill)
 		columnsTable.setItem(index, 7, QTableWidgetItem('No default'))
 		columnsTable.setCellWidget(index, 9, collationsCombo)
+		columnsTable.setCellWidget(index, 11, virtualityCombo)
 
 		applicationWindow.mainWindow.removeColumnButton.setEnabled(True)
+		column = Column(name = columnsTable.item(index, 1).text(),
+						dataType = dataTypes.currentText(),
+						# length = columnsTable.item(index, 3).text(),
+						unsigned = unsignedCheckBox.isChecked(),
+						allowsNull = nullCheckBox.isChecked(),
+						zerofill = zerofill.isChecked(),
+						default = columnsTable.item(index, 7).text(),
+						# comment = columnsTable.item(index, 8).text(),
+						collation = collationsCombo.currentText(),
+						# expression = columnsTable.item(index, 10).text(),
+						virtuality = virtualityCombo.currentText())
+		print column
 		self.checkSaveDiscardState()
 
 
@@ -135,3 +162,17 @@ class TableTab:
 
 		mainWindow.discardTableButton.setEnabled(showDiscardButton)
 
+	def dataTypeChanged(self, dataType):
+		print "Data type changed: " + str(dataType)
+
+	def columnChanged(self, row, column):
+		print "Column changed (%s, %s)" % (row, column)
+
+	def unsignedStateChanged(self, state):
+		print "Unsigned state changed %s" % state
+
+	def nullStateChanged(self, state):
+		print "NULL state changed %s" % state
+
+	def zerofillStateChanged(self, state):
+		print "zerofill state changed %s" % state
