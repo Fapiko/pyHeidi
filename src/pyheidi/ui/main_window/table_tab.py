@@ -1,4 +1,4 @@
-from PyQt4.QtGui import QCheckBox, QComboBox, QTableWidgetItem
+from PyQt4.QtGui import QCheckBox, QComboBox, QTableWidgetItem, QTableWidgetSelectionRange
 from PyQt4.QtCore import Qt, QSize, QStringList
 from database.Table import Table
 from database.column import Column
@@ -11,6 +11,9 @@ class TableTab:
 		self.applicationWindow = applicationWindow
 		self.tableTab = applicationWindow.mainWindow.tableTab
 		self.table = Table("", None)
+		# Set this to True when programmatically manipulating the columns table
+		# to prevent GUI events from causing sync issues with our columns
+		self.lockCellChanges = False
 
 		mainWindow = applicationWindow.mainWindow
 		mainWindow.addColumnButton.clicked.connect(self.addColumnRow)
@@ -20,6 +23,7 @@ class TableTab:
 		mainWindow.discardTableButton.clicked.connect(self.discardChanges)
 		mainWindow.saveTableButton.clicked.connect(self.saveChanges)
 		mainWindow.tableName.textEdited.connect(self.checkSaveDiscardState)
+		mainWindow.tableInfoTable.itemSelectionChanged.connect(self.selectedColumnChanged)
 
 	def createTableAction(self):
 		applicationWindow = self.applicationWindow
@@ -38,6 +42,7 @@ class TableTab:
 		}
 
 	def addColumnRow(self):
+		self.lockCellChanges = True
 		applicationWindow = self.applicationWindow
 		columnsTable = applicationWindow.mainWindow.tableInfoTable
 		columnsTable.cellChanged.connect(self.columnItemChanged)
@@ -95,16 +100,14 @@ class TableTab:
 		applicationWindow.mainWindow.removeColumnButton.setEnabled(True)
 		column = Column(name = columnsTable.item(index, 1).text(),
 						dataType = dataTypes.currentText(),
-						# length = columnsTable.item(index, 3).text(),
 						unsigned = unsignedCheckBox.isChecked(),
 						allowsNull = nullCheckBox.isChecked(),
 						zerofill = zerofill.isChecked(),
 						default = columnsTable.item(index, 7).text(),
-						# comment = columnsTable.item(index, 8).text(),
 						collation = collationsCombo.currentText(),
-						# expression = columnsTable.item(index, 10).text(),
 						virtuality = virtualityCombo.currentText())
 		self.table.columns.append(column)
+		self.lockCellChanges = False
 		self.checkSaveDiscardState()
 
 
@@ -124,10 +127,12 @@ class TableTab:
 		self.checkSaveDiscardState()
 
 	def moveCurrentColumnUp(self):
-		print 'move current column up!'
+		row = self.applicationWindow.mainWindow.tableInfoTable.selectedIndexes()[0].row()
+		self.moveRowTo(row, row - 1)
 
 	def moveCurrentColumnDown(self):
-		print 'move current column down!'
+		row = self.applicationWindow.mainWindow.tableInfoTable.selectedIndexes()[0].row()
+		self.moveRowTo(row, row + 1)
 
 	def dataTypesSizeHint(self):
 		return QSize(300, 400)
@@ -137,6 +142,40 @@ class TableTab:
 
 	def saveChanges(self):
 		print 'save changes!'
+
+	def moveRowTo(self, source, destination):
+		self.lockCellChanges = True
+		columnsTable = self.applicationWindow.mainWindow.tableInfoTable
+		columns = self.table.columns
+
+		moveColumn = columns.pop(source)
+		if source > destination:
+			columns.insert(destination, moveColumn)
+			source += 1
+		else:
+			columns.insert(destination, moveColumn)
+			destination += 1
+
+		columnsTable.insertRow(destination)
+
+		for i in [0, 1, 3, 7, 8, 10]:
+			newItem = columnsTable.item(source, i)
+			if newItem is not None:
+				newItem = newItem.clone()
+				columnsTable.setItem(destination, i, newItem)
+
+		for i in [2, 4, 5, 6, 9, 11]:
+			newWidget = columnsTable.cellWidget(source, i)
+			columnsTable.setCellWidget(destination, i, newWidget)
+
+		columnsTable.setCurrentCell(destination, 0)
+		columnsTable.removeRow(source)
+
+		for i in xrange(columnsTable.rowCount()):
+			columnsTable.item(i, 0).setText(str(i + 1))
+
+		self.lockCellChanges = False
+		self.checkMoveColumnButtonState()
 
 	def checkSaveDiscardState(self):
 		mainWindow = self.applicationWindow.mainWindow
@@ -173,7 +212,7 @@ class TableTab:
 	def columnItemChanged(self, row, column):
 		# This if allows us to avoid change events triggered from initially
 		# populating the row in the GUI
-		if row < len(self.table.columns):
+		if self.lockCellChanges is False:
 			columnsTable = self.applicationWindow.mainWindow.tableInfoTable
 			tableColumn = self.table.columns[row]
 
@@ -189,31 +228,46 @@ class TableTab:
 			elif column == 10:
 				tableColumn.setExpression(text)
 
-			print tableColumn
-
 	def unsignedStateChanged(self, state):
 		columnsTable = self.applicationWindow.mainWindow.tableInfoTable
 
 		for i in xrange(columnsTable.rowCount()):
 			if self.table.columns[i].unsigned != columnsTable.cellWidget(i, 4).isChecked():
-				print self.table.columns[i]
 				self.table.columns[i].unsigned = state
-				print self.table.columns[i]
 
 	def nullStateChanged(self, state):
 		columnsTable = self.applicationWindow.mainWindow.tableInfoTable
 
 		for i in xrange(columnsTable.rowCount()):
 			if self.table.columns[i].allowsNull != columnsTable.cellWidget(i, 5).isChecked():
-				print self.table.columns[i]
 				self.table.columns[i].allowsNull = state
-				print self.table.columns[i]
 
 	def zerofillStateChanged(self, state):
 		columnsTable = self.applicationWindow.mainWindow.tableInfoTable
 
 		for i in xrange(columnsTable.rowCount()):
 			if self.table.columns[i].zerofill != columnsTable.cellWidget(i, 6).isChecked():
-				print self.table.columns[i]
 				self.table.columns[i].zerofill = state
-				print self.table.columns[i]
+
+	def selectedColumnChanged(self):
+		self.checkMoveColumnButtonState()
+
+	def checkMoveColumnButtonState(self):
+		mainWindow = self.applicationWindow.mainWindow
+		columnsTable = self.applicationWindow.mainWindow.tableInfoTable
+		row = columnsTable.selectedIndexes()[0].row() + 1
+
+		totalRows = columnsTable.rowCount()
+		if totalRows < 2:
+			mainWindow.moveColumnUpButton.setEnabled(False)
+			mainWindow.moveColumnDownButton.setEnabled(False)
+		else:
+			if row < totalRows:
+				mainWindow.moveColumnDownButton.setEnabled(True)
+			else:
+				mainWindow.moveColumnDownButton.setEnabled(False)
+
+			if row > 1:
+				mainWindow.moveColumnUpButton.setEnabled(True)
+			else:
+				mainWindow.moveColumnUpButton.setEnabled(False)
