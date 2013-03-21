@@ -38,7 +38,7 @@ class Column:
 		else:
 			self.comment = comment
 
-	def __str__(self):
+	def getSql(self):
 		return_string = "`%s` %s" % (self.name, self.dataType)
 
 		if self.length is not None:
@@ -62,3 +62,6 @@ class Column:
 			return_string += " COMMENT '%s'" % self.comment
 
 		return return_string
+
+	def __str__(self):
+		return self.getSql()

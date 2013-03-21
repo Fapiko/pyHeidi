@@ -103,6 +103,7 @@ class DatabaseServer:
 		"""
 		self.currentDatabase = database
 		database.setAsCurrentDatabase()
+		self.execute("USE `%s`" % database.name)
 
 	def findDatabaseByName(self, name):
 		"""

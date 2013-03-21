@@ -72,7 +72,19 @@ class Table:
 		database.tables.append(self)
 
 	def getColumnString(self):
-		return
+		columnsCombined = ''
+		for column in self.columns:
+			columnsCombined += "\t%s,\n" % column
+
+		columnsCombined = columnsCombined[:-2]
+
+		return "(\n%s\n)" % columnsCombined
+
+	def getCreateTable(self):
+		createString = "CREATE TABLE `%s` %s\nCOLLATE='%s'\nENGINE=%s" % (
+			self.name, self.getColumnString(), 'utf8_general_ci', 'InnoDB')
+
+		return createString
 
 	def __str__(self):
-		createString = "CREATE TABLE `%s` %s\nCOLLATE='%s'\nENGINE=%s" % (self.name, self.getColumnString())
+		return self.getCreateTable()

@@ -22,7 +22,7 @@ class TableTab:
 		mainWindow.moveColumnUpButton.clicked.connect(self.moveCurrentColumnUp)
 		mainWindow.discardTableButton.clicked.connect(self.discardChanges)
 		mainWindow.saveTableButton.clicked.connect(self.saveChanges)
-		mainWindow.tableName.textEdited.connect(self.checkSaveDiscardState)
+		mainWindow.tableName.textEdited.connect(self.nameEdited)
 		mainWindow.tableInfoTable.itemSelectionChanged.connect(self.selectedColumnChanged)
 
 	def createTableAction(self):
@@ -110,7 +110,6 @@ class TableTab:
 		self.lockCellChanges = False
 		self.checkSaveDiscardState()
 
-
 	def buildQStringList(self, items):
 		"""
 		@rtype: QStringList
@@ -141,7 +140,8 @@ class TableTab:
 		print 'discard changes!'
 
 	def saveChanges(self):
-		print 'save changes!'
+		print self.table.getCreateTable()
+		self.applicationWindow.currentServer.execute(self.table.getCreateTable())
 
 	def moveRowTo(self, source, destination):
 		self.lockCellChanges = True
@@ -271,3 +271,7 @@ class TableTab:
 				mainWindow.moveColumnUpButton.setEnabled(True)
 			else:
 				mainWindow.moveColumnUpButton.setEnabled(False)
+
+	def nameEdited(self):
+		self.table.name = self.applicationWindow.mainWindow.tableName.text()
+		self.checkSaveDiscardState()
