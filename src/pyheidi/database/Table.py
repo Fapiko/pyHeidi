@@ -69,6 +69,9 @@ class Table:
 		twMachineTabs.setTabText(twMachineTabs.indexOf(tableTab), "Table: %s" % self.name)
 		twMachineTabs.setCurrentWidget(tableTab)
 
+		for i in range(0, mainWindow.tableInfoTable.rowCount()):
+			mainWindow.tableInfoTable.removeRow(0)
+
 		applicationWindow.tableTab.table = self
 
 		self.updateUI()

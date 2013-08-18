@@ -52,7 +52,7 @@ class TableTab:
 		index = columnsTable.rowCount()
 
 		dataTypes = QComboBox()
-		dataTypes.addItems(self.buildQStringList(['TINYINT', 'SMALLINT', 'MEDIUMINT', 'BIGINT', 'BIT']))
+		dataTypes.addItems(self.buildQStringList(['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT', 'BIT']))
 		dataTypes.insertSeparator(dataTypes.count())
 		dataTypes.addItems(self.buildQStringList(['FLOAT', 'DOUBLE', 'DECIMAL']))
 		dataTypes.insertSeparator(dataTypes.count())
@@ -286,6 +286,17 @@ class TableTab:
 
 	def resetColumn(self, index):
 		column = self.table.columns[index]
+
 		columnsTable = self.applicationWindow.mainWindow.tableInfoTable
+		dataTypes = columnsTable.cellWidget(index, 2)
+		unsignedCheckbox = columnsTable.cellWidget(index, 4)
+		allowsNullCheckbox = columnsTable.cellWidget(index, 5)
 
 		columnsTable.setItem(index, 1, QTableWidgetItem(column.name))
+		dataTypes.setCurrentIndex(dataTypes.findText(column.dataType.upper()))
+		if column.length is not None:
+			columnsTable.setItem(index, 3, QTableWidgetItem(column.length))
+		if column.unsigned:
+			unsignedCheckbox.setChecked(True)
+		if column.allowsNull is False:
+			allowsNullCheckbox.setChecked(False)
