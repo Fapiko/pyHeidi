@@ -15,6 +15,8 @@ class TableTab:
 		# to prevent GUI events from causing sync issues with our columns
 		self.lockCellChanges = False
 
+		self.previousState = None
+
 		mainWindow = applicationWindow.mainWindow
 		mainWindow.addColumnButton.clicked.connect(self.addColumnRow)
 		mainWindow.removeColumnButton.clicked.connect(self.removeCurrentColumnRow)
@@ -41,7 +43,7 @@ class TableTab:
 			'columns': None
 		}
 
-	def addColumnRow(self):
+	def addColumnRow(self, column = None):
 		self.lockCellChanges = True
 		applicationWindow = self.applicationWindow
 		columnsTable = applicationWindow.mainWindow.tableInfoTable
@@ -98,15 +100,20 @@ class TableTab:
 		columnsTable.setCellWidget(index, 9, collationsCombo)
 		columnsTable.setCellWidget(index, 11, virtualityCombo)
 		applicationWindow.mainWindow.removeColumnButton.setEnabled(True)
-		column = Column(name = columnsTable.item(index, 1).text(),
-						dataType = dataTypes.currentText(),
-						unsigned = unsignedCheckBox.isChecked(),
-						allowsNull = nullCheckBox.isChecked(),
-						zerofill = zerofill.isChecked(),
-						default = columnsTable.item(index, 7).text(),
-						collation = collationsCombo.currentText(),
-						virtuality = virtualityCombo.currentText())
-		self.table.columns.append(column)
+
+		if column is None:
+			column = Column(name = columnsTable.item(index, 1).text(),
+					dataType = dataTypes.currentText(),
+					unsigned = unsignedCheckBox.isChecked(),
+					allowsNull = nullCheckBox.isChecked(),
+					zerofill = zerofill.isChecked(),
+					default = columnsTable.item(index, 7).text(),
+					collation = collationsCombo.currentText(),
+					virtuality = virtualityCombo.currentText())
+			self.table.columns.append(column)
+		else:
+			self.resetColumn(index)
+
 		self.lockCellChanges = False
 		self.checkSaveDiscardState()
 
@@ -188,17 +195,18 @@ class TableTab:
 
 		showDiscardButton = False
 		previousState = self.previousState
-		for key in previousState:
-			if key == 'table_name':
-				if tableName != previousState['table_name']:
-					showDiscardButton = True
-					break
-			elif key == 'columns':
-				if previousState['columns'] is None and columnCount > 0:
-					showDiscardButton = True
-					break
+		if previousState is not None:
+			for key in previousState:
+				if key == 'table_name':
+					if tableName != previousState['table_name']:
+						showDiscardButton = True
+						break
+				elif key == 'columns':
+					if previousState['columns'] is None and columnCount > 0:
+						showDiscardButton = True
+						break
 
-		mainWindow.discardTableButton.setEnabled(showDiscardButton)
+			mainWindow.discardTableButton.setEnabled(showDiscardButton)
 
 	def dataTypeChanged(self, dataType):
 		columnsTable = self.applicationWindow.mainWindow.tableInfoTable
@@ -275,3 +283,9 @@ class TableTab:
 	def nameEdited(self):
 		self.table.name = self.applicationWindow.mainWindow.tableName.text()
 		self.checkSaveDiscardState()
+
+	def resetColumn(self, index):
+		column = self.table.columns[index]
+		columnsTable = self.applicationWindow.mainWindow.tableInfoTable
+
+		columnsTable.setItem(index, 1, QTableWidgetItem(column.name))

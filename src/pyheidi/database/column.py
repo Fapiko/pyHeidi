@@ -1,3 +1,5 @@
+import re
+
 class Column:
 	def __init__(self, name=None, dataType=None, length=None, unsigned=False,
 			allowsNull=True, zerofill=False, default=None, comment=None,
@@ -65,3 +67,25 @@ class Column:
 
 	def __str__(self):
 		return self.getSql()
+
+	@staticmethod
+	def fromString(columnString):
+		columnPattern = re.compile('`(?P<name>.+)` (?P<datatype>[a-z]+)(\((?P<length>\d+)\))?( )?(?P<allows_null>NOT NULL)?(DEFAULT [a-z]+)?( )?(AUTO_INCREMENT)?',
+				re.IGNORECASE | re.DOTALL)
+		matches = columnPattern.match(columnString)
+
+		# print columnString
+
+		if matches is None:
+			print columnString
+
+		column = Column(
+			matches.group('name'),
+			matches.group('datatype'),
+			matches.group('length')
+		)
+
+		if matches.group('allows_null') == 'NOT NULL':
+			column.allowsNull = False
+
+		return column

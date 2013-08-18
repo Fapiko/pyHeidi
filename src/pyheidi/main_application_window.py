@@ -5,6 +5,7 @@ from database.DatabaseServer import DatabaseServer
 import re
 from mysql_syntax_highlighter import MysqlSyntaxHighlighter
 from ui.main_window.table_tab import TableTab
+from ui.main_window.database_tab import DatabaseTab
 
 class MainApplicationWindow(QMainWindow):
 	def __init__(self, configDb):
@@ -47,6 +48,7 @@ class MainApplicationWindow(QMainWindow):
 		self.show()
 
 		self.tableTab = TableTab(self)
+		self.databaseTab = DatabaseTab(self)
 
 		databaseInfoTable.setContextMenuPolicy(Qt.CustomContextMenu)
 		databaseInfoTable.customContextMenuRequested.connect(self.databaseContextMenu)
@@ -166,9 +168,11 @@ class MainApplicationWindow(QMainWindow):
 				database.refreshTables()
 
 	def showDatabaseTab(self):
+		print 'show db'
 		self.showTab(self.mainWindow.databaseTab, QIcon('../resources/icons/database.png'), 'Database:')
 
 	def showTableTab(self):
+		print 'show table'
 		self.showTab(self.mainWindow.tableTab, QIcon('../resources/icons/table.png'), 'Table:')
 
 	def showTab(self, tab, name, icon):
@@ -178,3 +182,10 @@ class MainApplicationWindow(QMainWindow):
 		@type name: str
 		"""
 		self.mainWindow.twMachineTabs.addTab(tab, name, icon)
+
+	def updateCurrentTable(self, tableName):
+		"""
+		@type tableTreeItem: HeidiTreeWidgetItem
+		"""
+		table = self.currentDatabase.findTableByName(tableName)
+		table.setAsCurrentTable()

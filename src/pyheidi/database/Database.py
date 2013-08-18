@@ -81,6 +81,7 @@ class Database:
 	def findTableByName(self, name):
 		"""
 		@type name: str
+		@rtype: Table
 		"""
 		for table in self.tables:
 			if table.name == name:

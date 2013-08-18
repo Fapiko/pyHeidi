@@ -1,5 +1,7 @@
 from PyQt4.QtGui import QIcon
 from qthelpers.HeidiTreeWidgetItem import HeidiTreeWidgetItem
+import re
+from column import Column
 
 class Table:
 	def __init__(self, name, database = None, rows = None, size = None, created = None,
@@ -25,7 +27,7 @@ class Table:
 
 		self.database = database
 		if database is not None:
-			self.setDabase(database)
+			self.setDatabase(database)
 
 		if columns is not None:
 			self.columns = columns
@@ -58,10 +60,20 @@ class Table:
 			return timestamp.isoformat(' ')
 
 	def setAsCurrentTable(self):
-		self.database.server.execute("SHOW CREATE TABLE `%s`.`%s`" %
-									 (self.database.name, self.name))
+		applicationWindow = self.getApplicationWindow()
+		applicationWindow.showTableTab()
+		mainWindow = applicationWindow.mainWindow
+		tableTab = mainWindow.tableTab
+		twMachineTabs = mainWindow.twMachineTabs
 
-	def setDabase(self, database):
+		twMachineTabs.setTabText(twMachineTabs.indexOf(tableTab), "Table: %s" % self.name)
+		twMachineTabs.setCurrentWidget(tableTab)
+
+		applicationWindow.tableTab.table = self
+
+		self.updateUI()
+
+	def setDatabase(self, database):
 		self.database = database
 		databaseTreeItem = database.getDatabaseTreeItem()
 		tableTreeItem = HeidiTreeWidgetItem()
@@ -88,3 +100,41 @@ class Table:
 
 	def __str__(self):
 		return self.getCreateTable()
+
+	def updateUI(self):
+		self.refreshColumns()
+		print self
+		mainWindow = self.getApplicationWindow().mainWindow
+
+		mainWindow.tableName.setText(self.name)
+		mainWindow.tableComment.setPlainText(self.comment)
+
+		for column in self.columns:
+			self.getApplicationWindow().tableTab.addColumnRow(column)
+
+	def refreshColumns(self):
+		cursor = self.database.server.execute("SHOW CREATE TABLE `%s`.`%s`" %
+				(self.database.name, self.name))
+		for row in cursor:
+			for column in self.parseCreateTableString(row['Create Table'])['columns']:
+				self.columns.append(Column.fromString(column))
+
+	def parseCreateTableString(self, createTableString):
+		createTablePattern = re.compile('CREATE TABLE `(?P<name>[a-z_]+)` \((?P<columns>.*?)(PRIMARY KEY .*\n)?\) ENGINE=(?P<engine>[a-z]+) (AUTO_INCREMENT=\d+ )?DEFAULT CHARSET=(?P<charset>[a-z\d]+)',
+				re.IGNORECASE | re.DOTALL)
+		matches = createTablePattern.match(createTableString)
+
+		if matches is None:
+			print createTableString
+
+		columns = matches.group('columns').strip().split("\n")
+		for index, column in enumerate(columns):
+			column = column.strip()
+			columns[index] = column.strip(',')
+
+		returnDict = {
+			'name': matches.group('name'),
+			'columns': columns
+		}
+
+		return returnDict
