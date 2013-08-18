@@ -50,6 +50,8 @@ class MainApplicationWindow(QMainWindow):
 		self.tableTab = TableTab(self)
 		self.databaseTab = DatabaseTab(self)
 
+		self.closeEvent = self.onClose
+
 		databaseInfoTable.setContextMenuPolicy(Qt.CustomContextMenu)
 		databaseInfoTable.customContextMenuRequested.connect(self.databaseContextMenu)
 
@@ -145,17 +147,23 @@ class MainApplicationWindow(QMainWindow):
 
 		mainWindowHeight = self.height()
 		mainWindowWidth = self.width()
+		mainWindowX = self.pos().x()
+		mainWindowY = self.pos().y()
 		dbInfoTableRegex = re.compile("^databaseinfotable\.[0-7]\.width")
 		for row in cursor:
 			if row['name'] == 'mainwindow.width':
 				mainWindowWidth = int(row['value'])
 			elif row['name'] == 'mainwindow.height':
 				mainWindowHeight = int(row['value'])
+			elif row['name'] == 'mainwindow.x':
+				mainWindowX = int(row['value'])
+			elif row['name'] == 'mainwindow.y':
+				mainWindowY = int(row['value'])
 			elif dbInfoTableRegex.match(row['name']):
 				index = int(row['name'].split('.')[1])
 				self.mainWindow.databaseInfoTable.setColumnWidth(index, int(row['value']))
 
-		self.resize(mainWindowWidth, mainWindowHeight)
+		self.setGeometry(mainWindowX, mainWindowY, mainWindowWidth, mainWindowHeight)
 		self.obeyResize = True
 
 	def databaseTreeItemExpanded(self, item):
@@ -189,3 +197,9 @@ class MainApplicationWindow(QMainWindow):
 		"""
 		table = self.currentDatabase.findTableByName(tableName)
 		table.setAsCurrentTable()
+
+	def onClose(self, closeEvent):
+		cursor = self.configDb.cursor()
+		cursor.execute("REPLACE INTO `settings` (name, value) VALUES ('mainwindow.x', ?), ('mainwindow.y', ?)", [self.pos().x(), self.pos().y()])
+		self.configDb.commit()
+		QMainWindow.closeEvent(self, closeEvent)
