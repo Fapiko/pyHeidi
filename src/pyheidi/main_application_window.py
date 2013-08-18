@@ -1,4 +1,4 @@
-from PyQt4.QtCore import Qt, QPoint
+from PyQt4.QtCore import Qt, QByteArray, QPoint
 from PyQt4.QtGui import QColor, QIcon, QMainWindow, QMenu, QResizeEvent
 from ui.ui_mainwindow import Ui_MainWindow
 from database.DatabaseServer import DatabaseServer
@@ -149,7 +149,9 @@ class MainApplicationWindow(QMainWindow):
 		mainWindowWidth = self.width()
 		mainWindowX = self.pos().x()
 		mainWindowY = self.pos().y()
+		splitter2Sizes = []
 		dbInfoTableRegex = re.compile("^databaseinfotable\.[0-7]\.width")
+		splitter2SizesRegex = re.compile("^splitter_2\.[0-7]")
 		for row in cursor:
 			if row['name'] == 'mainwindow.width':
 				mainWindowWidth = int(row['value'])
@@ -162,7 +164,10 @@ class MainApplicationWindow(QMainWindow):
 			elif dbInfoTableRegex.match(row['name']):
 				index = int(row['name'].split('.')[1])
 				self.mainWindow.databaseInfoTable.setColumnWidth(index, int(row['value']))
+			elif splitter2SizesRegex.match(row['name']):
+				splitter2Sizes.append(int(row['value']))
 
+		self.mainWindow.splitter_2.setSizes(splitter2Sizes)
 		self.setGeometry(mainWindowX, mainWindowY, mainWindowWidth, mainWindowHeight)
 		self.obeyResize = True
 
@@ -201,5 +206,11 @@ class MainApplicationWindow(QMainWindow):
 	def onClose(self, closeEvent):
 		cursor = self.configDb.cursor()
 		cursor.execute("REPLACE INTO `settings` (name, value) VALUES ('mainwindow.x', ?), ('mainwindow.y', ?)", [self.pos().x(), self.pos().y()])
+
+		sizes = self.mainWindow.splitter_2.sizes()
+		for i, size in enumerate(sizes):
+			cursor.execute("REPLACE INTO `settings` (name, value) VALUES ('splitter_2.%d', ?)" % i, [size])
+
 		self.configDb.commit()
+
 		QMainWindow.closeEvent(self, closeEvent)
