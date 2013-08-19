@@ -5,7 +5,8 @@ from column import Column
 
 class Table:
 	def __init__(self, name, database = None, rows = None, size = None, created = None,
-			updated = None, engine = None, comment = None, columns = None, autoincrement = None):
+			updated = None, engine = None, comment = None, columns = None,
+			autoincrement = None, defaultCollation = None):
 		"""
 		@type name: str
 		@type database: Database
@@ -17,6 +18,7 @@ class Table:
 		@type comment: str
 		@type columns: list
 		@type autoincrement: int
+		@type defaultCollation: str
 		"""
 		self.name = name
 		self.created = created
@@ -26,6 +28,7 @@ class Table:
 		self.engine = engine
 		self.comment = comment
 		self.autoincrement = autoincrement
+		self.defaultCollation = defaultCollation
 
 		self.database = database
 		if database is not None:
@@ -89,6 +92,12 @@ class Table:
 	def __str__(self):
 		return self.getCreateTable()
 
+	def refresh(self):
+		cursor = self.database.server.execute("SHOW TABLE STATUS FROM `%s` WHERE Name = '%s'" %
+	  			(self.database.name, self.name))
+		self.defaultCollation = cursor.fetchone()['Collation']
+
+		self.refreshColumns()
 
 	def refreshColumns(self):
 		cursor = self.database.server.execute("SHOW CREATE TABLE `%s`.`%s`" %

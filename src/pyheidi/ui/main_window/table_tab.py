@@ -3,6 +3,7 @@ from PyQt4.QtCore import Qt, QSize, QStringList
 from database.table import Table
 from database.column import Column
 from ui.main_window.table_info_row import TableInfoRow
+from qthelpers import helper_methods
 
 class TableTab:
 	def __init__(self, applicationWindow):
@@ -238,9 +239,15 @@ class TableTab:
 		if column.allowsNull is False:
 			allowsNullCheckbox.setChecked(False)
 
-	@staticmethod
-	def generateDefaultCollationField():
-		print 'placeholder'
+	def populateDefaultCollationField(self, server):
+		"""
+		@type server: DatabaseServer
+		@type defaultCollation: str
+		"""
+		field = self.applicationWindow.mainWindow.tableOptionsDefaultCollation
+		collations = server.getCollations()
+		for collation in collations:
+			field.addItem(collation['Collation'])
 
 	def setCurrentTable(self, table):
 		"""
@@ -248,6 +255,7 @@ class TableTab:
 		"""
 		self.table = table
 
+		table.refresh()
 		applicationWindow = self.applicationWindow
 		applicationWindow.showTableTab()
 		mainWindow = applicationWindow.mainWindow
@@ -262,7 +270,6 @@ class TableTab:
 	def updateUI(self):
 		table = self.table
 
-		table.refreshColumns()
 		mainWindow = self.applicationWindow.mainWindow
 
 		mainWindow.tableName.setText(table.name)
@@ -274,4 +281,15 @@ class TableTab:
 		for column in table.columns:
 			self.addColumnRow(column)
 
-		mainWindow.tableOptionsAutoIncrement.setText(table.autoincrement)
+		self.setAutoincrementValue(table.autoincrement)
+		self.setDefaultCollationValue(table.defaultCollation)
+
+	def setDefaultCollationValue(self, collation):
+		field = self.applicationWindow.mainWindow.tableOptionsDefaultCollation
+		field.setCurrentIndex(field.findText(collation))
+
+	def setAutoincrementValue(self, autoincrement):
+		if autoincrement is None:
+			autoincrement = ''
+
+		self.applicationWindow.mainWindow.tableOptionsAutoIncrement.setText(autoincrement)

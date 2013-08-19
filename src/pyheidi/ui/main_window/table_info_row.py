@@ -1,6 +1,7 @@
 from PyQt4.QtCore import Qt, QStringList
 from PyQt4.QtGui import QCheckBox, QComboBox, QHBoxLayout, QLabel, QTableWidgetItem, QWidget
 from database.column import Column
+from qthelpers import helper_methods
 
 
 class TableInfoRow:
@@ -18,19 +19,19 @@ class TableInfoRow:
 		@rtype: QComboBox
 		"""
 		dataTypes = QComboBox()
-		dataTypes.addItems(TableInfoRow.buildQStringList(['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT', 'BIT']))
+		dataTypes.addItems(helper_methods.buildQStringList(['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT', 'BIT']))
 		dataTypes.insertSeparator(dataTypes.count())
-		dataTypes.addItems(TableInfoRow.buildQStringList(['FLOAT', 'DOUBLE', 'DECIMAL']))
+		dataTypes.addItems(helper_methods.buildQStringList(['FLOAT', 'DOUBLE', 'DECIMAL']))
 		dataTypes.insertSeparator(dataTypes.count())
-		dataTypes.addItems(TableInfoRow.buildQStringList(['CHAR', 'VARCHAR', 'TINYTEXT', 'TEXT', 'MEDIUMTEXT', 'LONGTEXT']))
+		dataTypes.addItems(helper_methods.buildQStringList(['CHAR', 'VARCHAR', 'TINYTEXT', 'TEXT', 'MEDIUMTEXT', 'LONGTEXT']))
 		dataTypes.insertSeparator(dataTypes.count())
-		dataTypes.addItems(TableInfoRow.buildQStringList(['BINARY', 'VARBINARY', 'TINYBLOB', 'BLOB', 'MEDIUMBLOB', 'LONGBLOB']))
+		dataTypes.addItems(helper_methods.buildQStringList(['BINARY', 'VARBINARY', 'TINYBLOB', 'BLOB', 'MEDIUMBLOB', 'LONGBLOB']))
 		dataTypes.insertSeparator(dataTypes.count())
-		dataTypes.addItems(TableInfoRow.buildQStringList(['DATE', 'TIME', 'YEAR', 'DATETIME', 'TIMESTAMP']))
+		dataTypes.addItems(helper_methods.buildQStringList(['DATE', 'TIME', 'YEAR', 'DATETIME', 'TIMESTAMP']))
 		dataTypes.insertSeparator(dataTypes.count())
-		dataTypes.addItems(TableInfoRow.buildQStringList(['POINT', 'LINESTRING', 'POLYGON', 'GEOMETRY', 'MULTIPOINT', 'MULTILINESTRING', 'MULTIPOLYGON', 'GEOMETRYCOLLECTION']))
+		dataTypes.addItems(helper_methods.buildQStringList(['POINT', 'LINESTRING', 'POLYGON', 'GEOMETRY', 'MULTIPOINT', 'MULTILINESTRING', 'MULTIPOLYGON', 'GEOMETRYCOLLECTION']))
 		dataTypes.insertSeparator(dataTypes.count())
-		dataTypes.addItems(TableInfoRow.buildQStringList(['ENUM', 'SET']))
+		dataTypes.addItems(helper_methods.buildQStringList(['ENUM', 'SET']))
 
 		return dataTypes
 
@@ -44,17 +45,6 @@ class TableInfoRow:
 		idField.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
 
 		return idField
-
-	@staticmethod
-	def buildQStringList(items):
-		"""
-		@rtype: QStringList
-		"""
-		returnData = QStringList()
-		for item in items:
-			returnData.append(item)
-
-		return returnData
 
 	@staticmethod
 	def generateUnsignedCheckboxField():
@@ -98,7 +88,7 @@ class TableInfoRow:
 		@rtype: QComboBox
 		"""
 		field = QComboBox()
-		field.addItems(TableInfoRow.buildQStringList(['', 'VIRTUAL', 'PERSISTENT']))
+		field.addItems(helper_methods.buildQStringList(['', 'VIRTUAL', 'PERSISTENT']))
 
 		return field
 
@@ -119,6 +109,8 @@ class TableInfoRow:
 	def insertAt(self, index):
 		parent = self.parent
 		column = self.column
+
+		print column
 
 		self.idField = TableInfoRow.generateIdField(index)
 		self.nameField = TableInfoRow.generateNameField(index, column.name)

@@ -36,12 +36,14 @@ class DatabaseServer:
 		"""
 		cursor = self.connection.cursor()
 		if len(args) == 1:
+			text = args[0]
 			cursor.execute(args[0])
 		elif len(args) == 2:
+			text = args[0] % args[1]
 			cursor.execute(args[0], args[1])
 
 		statusWindow = self.applicationWindow.mainWindow.txtStatus
-		statusWindow.append("%s;" % args[0])
+		statusWindow.append("%s;" % text)
 
 		return cursor
 

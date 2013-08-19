@@ -3,7 +3,7 @@ from PyQt4.QtGui import QIcon, QTableWidgetItem, QTreeWidgetItem
 from qthelpers.HeidiTreeWidgetItem import HeidiTreeWidgetItem
 from utilities.byte_sized_strings import byteSizedStrings
 from table import Table
-# from database_server import DatabaseServer
+
 
 class Database:
 	def __init__(self, server, name):
@@ -78,6 +78,8 @@ class Database:
 			databaseTable.setItem(index, 5, QTableWidgetItem(table.engine))
 			databaseTable.setItem(index, 6, QTableWidgetItem(table.comment))
 			databaseTable.setItem(index, 7, QTableWidgetItem('table'))
+
+		self.applicationWindow.tableTab.populateDefaultCollationField(self.server)
 
 	def findTableByName(self, name):
 		"""
