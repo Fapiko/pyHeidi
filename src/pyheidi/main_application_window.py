@@ -26,6 +26,8 @@ class MainApplicationWindow(QMainWindow):
 		mainWindow.twMachineTabs.removePage(mainWindow.databaseTab)
 		mainWindow.twMachineTabs.removePage(mainWindow.tableTab)
 
+		mainWindow.tableInfoTable.mainApplicationWindow = self
+
 		# mainWindow.txtStatus.append("# Single Comment")
 		# mainWindow.txtStatus.append("/* Multi\nLine Comment")
 		# mainWindow.txtStatus.append("*/")
@@ -181,11 +183,9 @@ class MainApplicationWindow(QMainWindow):
 				database.refreshTables()
 
 	def showDatabaseTab(self):
-		print 'show db'
 		self.showTab(self.mainWindow.databaseTab, QIcon('../resources/icons/database.png'), 'Database:')
 
 	def showTableTab(self):
-		print 'show table'
 		self.showTab(self.mainWindow.tableTab, QIcon('../resources/icons/table.png'), 'Table:')
 
 	def showTab(self, tab, name, icon):

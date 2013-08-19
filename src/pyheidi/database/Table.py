@@ -106,7 +106,6 @@ class Table:
 
 	def updateUI(self):
 		self.refreshColumns()
-		print self
 		mainWindow = self.getApplicationWindow().mainWindow
 
 		mainWindow.tableName.setText(self.name)
@@ -128,7 +127,7 @@ class Table:
 		matches = createTablePattern.match(createTableString)
 
 		if matches is None:
-			print createTableString
+			print "Error:\n" + createTableString
 
 		columns = matches.group('columns').strip().split("\n")
 		for index, column in enumerate(columns):

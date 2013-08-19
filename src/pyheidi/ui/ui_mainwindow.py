@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Sun Aug 18 18:21:41 2013
+# Created: Sun Aug 18 22:42:44 2013
 #      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
@@ -232,7 +232,7 @@ class Ui_MainWindow(object):
         spacerItem = QtGui.QSpacerItem(0, 0, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self._2.addItem(spacerItem)
         self.verticalLayout_5.addLayout(self._2)
-        self.tableInfoTable = QtGui.QTableWidget(self.tableTab)
+        self.tableInfoTable = DatabaseTableInfo(self.tableTab)
         self.tableInfoTable.setStyleSheet(_fromUtf8("QTableWidget::item {\n"
 "    padding: 0px;\n"
 "}"))
@@ -425,4 +425,5 @@ class Ui_MainWindow(object):
         self.actionRefresh.setText(_translate("MainWindow", "Refresh", None))
         self.actionRefresh.setShortcut(_translate("MainWindow", "F5", None))
 
+from database_table_info import DatabaseTableInfo
 import resources_rc

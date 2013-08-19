@@ -678,6 +678,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DatabaseTableInfo</class>
+   <extends>QTableWidget</extends>
+   <header>database_table_info</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resources.qrc"/>
  </resources>
