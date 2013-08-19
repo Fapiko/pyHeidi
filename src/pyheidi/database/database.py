@@ -2,7 +2,8 @@ from PyQt4.QtCore import Qt
 from PyQt4.QtGui import QIcon, QTableWidgetItem, QTreeWidgetItem
 from qthelpers.HeidiTreeWidgetItem import HeidiTreeWidgetItem
 from utilities.byte_sized_strings import byteSizedStrings
-from database.Table import Table
+from table import Table
+# from database_server import DatabaseServer
 
 class Database:
 	def __init__(self, server, name):
@@ -92,4 +93,4 @@ class Database:
 		@type table: Table
 		"""
 		self.currentTable = table
-		table.setAsCurrentTable()
+		self.applicationWindow.tableTab.setCurrentTable(table)

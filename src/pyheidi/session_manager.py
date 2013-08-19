@@ -3,7 +3,7 @@ import sys
 import MySQLdb
 import MySQLdb.cursors
 import _mysql_exceptions
-from database.DatabaseServer import DatabaseServer
+from database.database_server import DatabaseServer
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtGui import QMessageBox, QShortcut
 from sqlite3 import *

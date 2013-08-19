@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/icons">
+    <file>resources/icons/wrench.png</file>
     <file>resources/icons/resultset_down.png</file>
     <file>resources/icons/resultset_up.png</file>
     <file>resources/icons/delete.png</file>

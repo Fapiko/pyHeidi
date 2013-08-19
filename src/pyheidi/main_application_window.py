@@ -1,7 +1,7 @@
 from PyQt4.QtCore import Qt, QByteArray, QPoint
 from PyQt4.QtGui import QColor, QIcon, QMainWindow, QMenu, QResizeEvent
 from ui.ui_mainwindow import Ui_MainWindow
-from database.DatabaseServer import DatabaseServer
+from database.database_server import DatabaseServer
 import re
 from mysql_syntax_highlighter import MysqlSyntaxHighlighter
 from ui.main_window.table_tab import TableTab

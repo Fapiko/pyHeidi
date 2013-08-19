@@ -120,8 +120,6 @@ class TableInfoRow:
 		parent = self.parent
 		column = self.column
 
-		print column
-
 		self.idField = TableInfoRow.generateIdField(index)
 		self.nameField = TableInfoRow.generateNameField(index, column.name)
 		self.dataTypesField = TableInfoRow.generateDataTypesField()

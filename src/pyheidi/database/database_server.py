@@ -2,7 +2,7 @@ import MySQLdb
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import QIcon, QTreeWidgetItem
 from qthelpers.HeidiTreeWidgetItem import HeidiTreeWidgetItem
-from database.Database import Database
+from database import Database
 
 class DatabaseServer:
 	def __init__(self, name, connection, applicationWindow):

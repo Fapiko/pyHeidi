@@ -5,7 +5,7 @@ from column import Column
 
 class Table:
 	def __init__(self, name, database = None, rows = None, size = None, created = None,
-			updated = None, engine = None, comment = None, columns = None):
+			updated = None, engine = None, comment = None, columns = None, autoincrement = None):
 		"""
 		@type name: str
 		@type database: Database
@@ -16,6 +16,7 @@ class Table:
 		@type engine: str
 		@type comment: str
 		@type columns: list
+		@type autoincrement: int
 		"""
 		self.name = name
 		self.created = created
@@ -24,6 +25,7 @@ class Table:
 		self.size = size
 		self.engine = engine
 		self.comment = comment
+		self.autoincrement = autoincrement
 
 		self.database = database
 		if database is not None:
@@ -59,23 +61,6 @@ class Table:
 		else:
 			return timestamp.isoformat(' ')
 
-	def setAsCurrentTable(self):
-		applicationWindow = self.getApplicationWindow()
-		applicationWindow.showTableTab()
-		mainWindow = applicationWindow.mainWindow
-		tableTab = mainWindow.tableTab
-		twMachineTabs = mainWindow.twMachineTabs
-
-		twMachineTabs.setTabText(twMachineTabs.indexOf(tableTab), "Table: %s" % self.name)
-		twMachineTabs.setCurrentWidget(tableTab)
-
-		for i in range(0, mainWindow.tableInfoTable.rowCount()):
-			mainWindow.tableInfoTable.removeRow(0)
-
-		applicationWindow.tableTab.table = self
-
-		self.updateUI()
-
 	def setDatabase(self, database):
 		self.database = database
 		databaseTreeItem = database.getDatabaseTreeItem()
@@ -104,25 +89,16 @@ class Table:
 	def __str__(self):
 		return self.getCreateTable()
 
-	def updateUI(self):
-		self.refreshColumns()
-		mainWindow = self.getApplicationWindow().mainWindow
-
-		mainWindow.tableName.setText(self.name)
-		mainWindow.tableComment.setPlainText(self.comment)
-
-		for column in self.columns:
-			self.getApplicationWindow().tableTab.addColumnRow(column)
 
 	def refreshColumns(self):
 		cursor = self.database.server.execute("SHOW CREATE TABLE `%s`.`%s`" %
 				(self.database.name, self.name))
 		for row in cursor:
-			for column in self.parseCreateTableString(row['Create Table'])['columns']:
+			for column in self.parseCreateTableString(row['Create Table']):
 				self.columns.append(Column.fromString(column))
 
 	def parseCreateTableString(self, createTableString):
-		createTablePattern = re.compile('CREATE TABLE `(?P<name>[a-z_]+)` \((?P<columns>.*?)(PRIMARY KEY .*\n)?\) ENGINE=(?P<engine>[a-z]+) (AUTO_INCREMENT=\d+ )?DEFAULT CHARSET=(?P<charset>[a-z\d]+)',
+		createTablePattern = re.compile('CREATE TABLE `(?P<name>[a-z_]+)` \((?P<columns>.*?)(PRIMARY KEY .*\n)?\) ENGINE=(?P<engine>[a-z]+) (AUTO_INCREMENT=(?P<autoincrement>\d+) )?DEFAULT CHARSET=(?P<charset>[a-z\d]+)',
 				re.IGNORECASE | re.DOTALL)
 		matches = createTablePattern.match(createTableString)
 
@@ -134,9 +110,7 @@ class Table:
 			column = column.strip()
 			columns[index] = column.strip(',')
 
-		returnDict = {
-			'name': matches.group('name'),
-			'columns': columns
-		}
+		self.name = matches.group('name')
+		self.autoincrement = matches.group('autoincrement')
 
-		return returnDict
+		return columns

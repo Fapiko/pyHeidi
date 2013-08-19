@@ -1,6 +1,6 @@
 from PyQt4.QtGui import QCheckBox, QComboBox, QTableWidgetItem, QTableWidgetSelectionRange
 from PyQt4.QtCore import Qt, QSize, QStringList
-from database.Table import Table
+from database.table import Table
 from database.column import Column
 from ui.main_window.table_info_row import TableInfoRow
 
@@ -48,6 +48,11 @@ class TableTab:
 		self.addColumnRow()
 
 	def addColumnRow(self, column=None):
+		self.lockCellChanges = True
+		applicationWindow = self.applicationWindow
+		columnsTable = applicationWindow.mainWindow.tableInfoTable
+		columnsTable.cellChanged.connect(self.columnItemChanged)
+
 		tableInfoTable = self.applicationWindow.mainWindow.tableInfoTable
 
 		if column is None:
@@ -55,78 +60,9 @@ class TableTab:
 
 		row = TableInfoRow(tableInfoTable, column)
 		tableInfoTable.addRow(row)
-		# self.lockCellChanges = True
-		# applicationWindow = self.applicationWindow
-		# columnsTable = applicationWindow.mainWindow.tableInfoTable
-		# columnsTable.cellChanged.connect(self.columnItemChanged)
-		# collations = applicationWindow.currentDatabase.server.getCollations()
-		# index = columnsTable.rowCount()
-		#
-		# dataTypes = QComboBox()
-		# dataTypes.addItems(self.buildQStringList(['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT', 'BIT']))
-		# dataTypes.insertSeparator(dataTypes.count())
-		# dataTypes.addItems(self.buildQStringList(['FLOAT', 'DOUBLE', 'DECIMAL']))
-		# dataTypes.insertSeparator(dataTypes.count())
-		# dataTypes.addItems(self.buildQStringList(['CHAR', 'VARCHAR', 'TINYTEXT', 'TEXT', 'MEDIUMTEXT', 'LONGTEXT']))
-		# dataTypes.insertSeparator(dataTypes.count())
-		# dataTypes.addItems(self.buildQStringList(['BINARY', 'VARBINARY', 'TINYBLOB', 'BLOB', 'MEDIUMBLOB', 'LONGBLOB']))
-		# dataTypes.insertSeparator(dataTypes.count())
-		# dataTypes.addItems(self.buildQStringList(['DATE', 'TIME', 'YEAR', 'DATETIME', 'TIMESTAMP']))
-		# dataTypes.insertSeparator(dataTypes.count())
-		# dataTypes.addItems(self.buildQStringList(['POINT', 'LINESTRING', 'POLYGON', 'GEOMETRY', 'MULTIPOINT', 'MULTILINESTRING', 'MULTIPOLYGON', 'GEOMETRYCOLLECTION']))
-		# dataTypes.insertSeparator(dataTypes.count())
-		# dataTypes.addItems(self.buildQStringList(['ENUM', 'SET']))
-		# dataTypes.currentIndexChanged.connect(self.dataTypeChanged)
-		#
-		# collationsCombo = QComboBox()
-		# collationsCombo.addItem('')
-		# for collation in collations:
-		# 	collationsCombo.addItem(collation['Collation'])
-		#
-		# virtualityCombo = QComboBox()
-		# virtualityCombo.addItems(self.buildQStringList(['', 'VIRTUAL', 'PERSISTENT']))
-		#
-		# unsignedCheckBox = QCheckBox()
-		# unsignedCheckBox.stateChanged.connect(self.unsignedStateChanged)
-		#
-		# nullCheckBox = QCheckBox()
-		# nullCheckBox.setCheckState(Qt.Checked)
-		# nullCheckBox.stateChanged.connect(self.nullStateChanged)
-		#
-		# zerofill = QCheckBox()
-		# zerofill.stateChanged.connect(self.zerofillStateChanged)
-		#
-		# columnIdField = QTableWidgetItem(str(index + 1))
-		# columnIdField.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-		# columnIdField.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-		#
-		# columnsTable.insertRow(index)
-		# columnsTable.setItem(index, 0, columnIdField)
-		# columnsTable.setItem(index, 1, QTableWidgetItem("Column %s" % (index + 1)))
-		# columnsTable.setCellWidget(index, 2, dataTypes)
-		# columnsTable.setCellWidget(index, 4, unsignedCheckBox)
-		# columnsTable.setCellWidget(index, 5, nullCheckBox)
-		# columnsTable.setCellWidget(index, 6, zerofill)
-		# columnsTable.setItem(index, 7, QTableWidgetItem('No default'))
-		# columnsTable.setCellWidget(index, 9, collationsCombo)
-		# columnsTable.setCellWidget(index, 11, virtualityCombo)
-		# applicationWindow.mainWindow.removeColumnButton.setEnabled(True)
-		#
-		# if column is None:
-		# 	column = Column(name = columnsTable.item(index, 1).text(),
-		# 			dataType = dataTypes.currentText(),
-		# 			unsigned = unsignedCheckBox.isChecked(),
-		# 			allowsNull = nullCheckBox.isChecked(),
-		# 			zerofill = zerofill.isChecked(),
-		# 			default = columnsTable.item(index, 7).text(),
-		# 			collation = collationsCombo.currentText(),
-		# 			virtuality = virtualityCombo.currentText())
-		# 	self.table.columns.append(column)
-		# else:
-		# 	self.resetColumn(index)
-		#
-		# self.lockCellChanges = False
-		# self.checkSaveDiscardState()
+
+		self.lockCellChanges = False
+		self.checkSaveDiscardState()
 
 	def removeCurrentColumnRow(self):
 		tableInfoTable = self.applicationWindow.mainWindow.tableInfoTable
@@ -301,3 +237,41 @@ class TableTab:
 			unsignedCheckbox.setChecked(True)
 		if column.allowsNull is False:
 			allowsNullCheckbox.setChecked(False)
+
+	@staticmethod
+	def generateDefaultCollationField():
+		print 'placeholder'
+
+	def setCurrentTable(self, table):
+		"""
+		@type table: Table
+		"""
+		self.table = table
+
+		applicationWindow = self.applicationWindow
+		applicationWindow.showTableTab()
+		mainWindow = applicationWindow.mainWindow
+		tableTab = mainWindow.tableTab
+
+		twMachineTabs = mainWindow.twMachineTabs
+		twMachineTabs.setTabText(twMachineTabs.indexOf(tableTab), "Table: %s" % table.name)
+		twMachineTabs.setCurrentWidget(tableTab)
+
+		self.updateUI()
+
+	def updateUI(self):
+		table = self.table
+
+		table.refreshColumns()
+		mainWindow = self.applicationWindow.mainWindow
+
+		mainWindow.tableName.setText(table.name)
+		mainWindow.tableComment.setPlainText(table.comment)
+
+		for i in range(0, mainWindow.tableInfoTable.rowCount()):
+			mainWindow.tableInfoTable.removeRow(0)
+
+		for column in table.columns:
+			self.addColumnRow(column)
+
+		mainWindow.tableOptionsAutoIncrement.setText(table.autoincrement)
