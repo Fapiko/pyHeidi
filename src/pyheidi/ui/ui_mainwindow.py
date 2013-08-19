@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Sun Aug 18 04:06:34 2013
+# Created: Sun Aug 18 18:21:41 2013
 #      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
@@ -233,6 +233,9 @@ class Ui_MainWindow(object):
         self._2.addItem(spacerItem)
         self.verticalLayout_5.addLayout(self._2)
         self.tableInfoTable = QtGui.QTableWidget(self.tableTab)
+        self.tableInfoTable.setStyleSheet(_fromUtf8("QTableWidget::item {\n"
+"    padding: 0px;\n"
+"}"))
         self.tableInfoTable.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
         self.tableInfoTable.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.tableInfoTable.setObjectName(_fromUtf8("tableInfoTable"))

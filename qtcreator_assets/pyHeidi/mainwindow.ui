@@ -484,7 +484,12 @@
            </layout>
           </item>
           <item>
-           <widget class="QTableWidget" name="tableInfoTable">
+           <widget class="DatabaseTableInfo" name="tableInfoTable">
+            <property name="styleSheet">
+             <string notr="true">QTableWidget::item {
+	padding: 0px;
+}</string>
+            </property>
             <property name="selectionMode">
              <enum>QAbstractItemView::SingleSelection</enum>
             </property>
