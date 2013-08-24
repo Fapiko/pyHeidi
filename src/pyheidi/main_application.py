@@ -33,7 +33,6 @@ class MainApplication():
 		app.exec_()
 
 	def createSettingsTable(self):
-
 		cursor = self.configDb.cursor()
 		cursor.execute("""
 			CREATE TABLE settings(

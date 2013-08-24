@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Mon Aug 19 02:42:04 2013
+# Created: Fri Aug 23 18:46:27 2013
 #      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
@@ -171,6 +171,9 @@ class Ui_MainWindow(object):
         self.splitter_3.setOrientation(QtCore.Qt.Vertical)
         self.splitter_3.setObjectName(_fromUtf8("splitter_3"))
         self.tableTabs = QtGui.QTabWidget(self.splitter_3)
+        self.tableTabs.setStyleSheet(_fromUtf8("QPushButton {\n"
+"    padding: 0px;\n"
+"}"))
         self.tableTabs.setObjectName(_fromUtf8("tableTabs"))
         self.tableTabsBasic = QtGui.QWidget()
         self.tableTabsBasic.setObjectName(_fromUtf8("tableTabsBasic"))
@@ -230,6 +233,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_7 = QtGui.QVBoxLayout()
         self.verticalLayout_7.setObjectName(_fromUtf8("verticalLayout_7"))
         self.addColumnButton_2 = QtGui.QPushButton(self.tableTabsIndexes)
+        self.addColumnButton_2.setStyleSheet(_fromUtf8(""))
         icon7 = QtGui.QIcon()
         icon7.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/resources/icons/add.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.addColumnButton_2.setIcon(icon7)
@@ -277,34 +281,34 @@ class Ui_MainWindow(object):
         icon12 = QtGui.QIcon()
         icon12.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/resources/icons/lightning.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.tableTabs.addTab(self.tableTabsIndexes, icon12, _fromUtf8(""))
-        self.widget = QtGui.QWidget(self.splitter_3)
-        self.widget.setObjectName(_fromUtf8("widget"))
-        self.verticalLayout_8 = QtGui.QVBoxLayout(self.widget)
+        self.layoutWidget = QtGui.QWidget(self.splitter_3)
+        self.layoutWidget.setObjectName(_fromUtf8("layoutWidget"))
+        self.verticalLayout_8 = QtGui.QVBoxLayout(self.layoutWidget)
         self.verticalLayout_8.setMargin(0)
         self.verticalLayout_8.setObjectName(_fromUtf8("verticalLayout_8"))
         self._2 = QtGui.QHBoxLayout()
         self._2.setObjectName(_fromUtf8("_2"))
-        self.label = QtGui.QLabel(self.widget)
+        self.label = QtGui.QLabel(self.layoutWidget)
         self.label.setObjectName(_fromUtf8("label"))
         self._2.addWidget(self.label)
-        self.addColumnButton = QtGui.QPushButton(self.widget)
+        self.addColumnButton = QtGui.QPushButton(self.layoutWidget)
         self.addColumnButton.setIcon(icon7)
         self.addColumnButton.setFlat(True)
         self.addColumnButton.setObjectName(_fromUtf8("addColumnButton"))
         self._2.addWidget(self.addColumnButton)
-        self.removeColumnButton = QtGui.QPushButton(self.widget)
+        self.removeColumnButton = QtGui.QPushButton(self.layoutWidget)
         self.removeColumnButton.setEnabled(False)
         self.removeColumnButton.setIcon(icon8)
         self.removeColumnButton.setFlat(True)
         self.removeColumnButton.setObjectName(_fromUtf8("removeColumnButton"))
         self._2.addWidget(self.removeColumnButton)
-        self.moveColumnUpButton = QtGui.QPushButton(self.widget)
+        self.moveColumnUpButton = QtGui.QPushButton(self.layoutWidget)
         self.moveColumnUpButton.setEnabled(False)
         self.moveColumnUpButton.setIcon(icon10)
         self.moveColumnUpButton.setFlat(True)
         self.moveColumnUpButton.setObjectName(_fromUtf8("moveColumnUpButton"))
         self._2.addWidget(self.moveColumnUpButton)
-        self.moveColumnDownButton = QtGui.QPushButton(self.widget)
+        self.moveColumnDownButton = QtGui.QPushButton(self.layoutWidget)
         self.moveColumnDownButton.setEnabled(False)
         self.moveColumnDownButton.setIcon(icon11)
         self.moveColumnDownButton.setFlat(True)
@@ -313,7 +317,7 @@ class Ui_MainWindow(object):
         spacerItem2 = QtGui.QSpacerItem(13, 13, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self._2.addItem(spacerItem2)
         self.verticalLayout_8.addLayout(self._2)
-        self.tableInfoTable = DatabaseTableInfo(self.widget)
+        self.tableInfoTable = DatabaseTableInfo(self.layoutWidget)
         self.tableInfoTable.setStyleSheet(_fromUtf8("QTableWidget::item {\n"
 "    padding: 0px;\n"
 "}"))
@@ -350,11 +354,11 @@ class Ui_MainWindow(object):
         self.verticalLayout_8.addWidget(self.tableInfoTable)
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
-        self.discardTableButton = QtGui.QPushButton(self.widget)
+        self.discardTableButton = QtGui.QPushButton(self.layoutWidget)
         self.discardTableButton.setEnabled(False)
         self.discardTableButton.setObjectName(_fromUtf8("discardTableButton"))
         self.horizontalLayout_2.addWidget(self.discardTableButton)
-        self.saveTableButton = QtGui.QPushButton(self.widget)
+        self.saveTableButton = QtGui.QPushButton(self.layoutWidget)
         self.saveTableButton.setEnabled(False)
         self.saveTableButton.setObjectName(_fromUtf8("saveTableButton"))
         self.horizontalLayout_2.addWidget(self.saveTableButton)
@@ -378,7 +382,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.splitter_2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1218, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1218, 23))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -407,7 +411,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.twMachineTabs.setCurrentIndex(2)
         self.processListTab.setCurrentIndex(0)
-        self.tableTabs.setCurrentIndex(2)
+        self.tableTabs.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

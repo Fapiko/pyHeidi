@@ -74,8 +74,6 @@ class Column:
 				re.IGNORECASE | re.DOTALL)
 		matches = columnPattern.match(columnString)
 
-		# print columnString
-
 		if matches is None:
 			print columnString
 

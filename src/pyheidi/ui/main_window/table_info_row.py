@@ -14,7 +14,7 @@ class TableInfoRow:
 		self.column = column
 
 	@staticmethod
-	def generateDataTypesField():
+	def generateDataTypesField(dataType=None):
 		"""
 		@rtype: QComboBox
 		"""
@@ -33,6 +33,9 @@ class TableInfoRow:
 		dataTypes.insertSeparator(dataTypes.count())
 		dataTypes.addItems(helper_methods.buildQStringList(['ENUM', 'SET']))
 
+		if dataType is not None:
+			dataTypes.setCurrentIndex(dataTypes.findText(dataType.upper()))
+
 		return dataTypes
 
 	@staticmethod
@@ -47,14 +50,14 @@ class TableInfoRow:
 		return idField
 
 	@staticmethod
-	def generateUnsignedCheckboxField():
+	def generateNullCheckboxField(allowsNull=True):
 		"""
 		@rtype: QCheckBox
 		"""
-		return TableInfoRow.generateCenteredCheckbox()
+		return TableInfoRow.generateCenteredCheckbox(allowsNull)
 
 	@staticmethod
-	def generateCenteredCheckbox():
+	def generateCenteredCheckbox(checked=False):
 		"""
 		@rtype: QCheckBox
 		"""
@@ -65,6 +68,7 @@ class TableInfoRow:
 		layout.setMargin(1)
 		field.setLayout(layout)
 		field.checkbox = checkbox
+		checkbox.setChecked(checked)
 
 		return field
 
@@ -114,10 +118,10 @@ class TableInfoRow:
 
 		self.idField = TableInfoRow.generateIdField(index)
 		self.nameField = TableInfoRow.generateNameField(index, column.name)
-		self.dataTypesField = TableInfoRow.generateDataTypesField()
-		self.unsignedField = TableInfoRow.generateCenteredCheckbox()
-		self.nullField = TableInfoRow.generateCenteredCheckbox()
-		self.zerofillField = TableInfoRow.generateCenteredCheckbox()
+		self.dataTypesField = TableInfoRow.generateDataTypesField(column.dataType)
+		self.unsignedField = TableInfoRow.generateCenteredCheckbox(column.unsigned)
+		self.nullField = TableInfoRow.generateNullCheckboxField(column.allowsNull)
+		self.zerofillField = TableInfoRow.generateCenteredCheckbox(column.zerofill)
 		self.collationsField = TableInfoRow.generateCollationsField(self.parent.getMainApplicationWindow().currentDatabase.server)
 		self.virtualityField = TableInfoRow.generateVirtualityField()
 
