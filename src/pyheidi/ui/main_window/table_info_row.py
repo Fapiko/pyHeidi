@@ -104,7 +104,32 @@ class TableInfoRow:
 		if name is None:
 			name = "Column %s" % index
 
-		return QTableWidgetItem(name)
+		return TableInfoRow.generateTextfield(name)
+
+	@staticmethod
+	def generateTextfield(defaultText=None):
+		"""
+		@rtype: QTableWidgetItem
+		"""
+		if defaultText is None:
+			defaultText = ''
+
+		return QTableWidgetItem(defaultText)
+
+	@staticmethod
+	def generateDefaultField(column):
+		"""
+		@type column: Column
+		@rtype: QTableWidgetItem
+		"""
+		if column.autoIncrement:
+			defaultText = 'AUTO_INCREMENT'
+		elif column.default is None:
+			defaultText = 'No default'
+		else:
+			defaultText = "'%s'" % column.default
+
+		return TableInfoRow.generateTextfield(defaultText)
 
 	def insertAtEnd(self):
 		index = self.parent.rowCount()
@@ -119,9 +144,11 @@ class TableInfoRow:
 		self.idField = TableInfoRow.generateIdField(index)
 		self.nameField = TableInfoRow.generateNameField(index, column.name)
 		self.dataTypesField = TableInfoRow.generateDataTypesField(column.dataType)
+		self.lengthField = TableInfoRow.generateTextfield(column.length)
 		self.unsignedField = TableInfoRow.generateCenteredCheckbox(column.unsigned)
 		self.nullField = TableInfoRow.generateNullCheckboxField(column.allowsNull)
 		self.zerofillField = TableInfoRow.generateCenteredCheckbox(column.zerofill)
+		self.defaultField = TableInfoRow.generateDefaultField(column)
 		self.collationsField = TableInfoRow.generateCollationsField(self.parent.getMainApplicationWindow().currentDatabase.server)
 		self.virtualityField = TableInfoRow.generateVirtualityField()
 
@@ -129,9 +156,10 @@ class TableInfoRow:
 		parent.setItem(index, 0, self.idField)
 		parent.setItem(index, 1, self.nameField)
 		parent.setCellWidget(index, 2, self.dataTypesField)
+		parent.setItem(index, 3, self.lengthField)
 		parent.setCellWidget(index, 4, self.unsignedField)
 		parent.setCellWidget(index, 5, self.nullField)
-		parent.setCellWidget(index, 5, self.zerofillField)
-		parent.setItem(index, 7, QTableWidgetItem('No default'))
+		parent.setCellWidget(index, 6, self.zerofillField)
+		parent.setItem(index, 7, self.generateDefaultField(column))
 		parent.setCellWidget(index, 9, self.collationsField)
 		parent.setCellWidget(index, 11, self.virtualityField)

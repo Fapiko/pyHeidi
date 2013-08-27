@@ -102,6 +102,7 @@ class Table:
 	def refreshColumns(self):
 		cursor = self.database.server.execute("SHOW CREATE TABLE `%s`.`%s`" %
 				(self.database.name, self.name))
+
 		for row in cursor:
 			for column in self.parseCreateTableString(row['Create Table']):
 				self.columns.append(Column.fromString(column))
