@@ -2,11 +2,12 @@ from PyQt4.QtGui import QIcon
 from qthelpers.HeidiTreeWidgetItem import HeidiTreeWidgetItem
 import re
 from column import Column
+from index import Index
 
 class Table:
 	def __init__(self, name, database = None, rows = None, size = None, created = None,
 			updated = None, engine = None, comment = None, columns = None,
-			autoincrement = None, defaultCollation = None):
+			autoincrement = None, defaultCollation = None, indexes = None):
 		"""
 		@type name: str
 		@type database: Database
@@ -19,6 +20,7 @@ class Table:
 		@type columns: list
 		@type autoincrement: int
 		@type defaultCollation: str
+		@type indexes: list
 		"""
 		self.name = name
 		self.created = created
@@ -38,6 +40,11 @@ class Table:
 			self.columns = columns
 		else:
 			self.columns = []
+
+		if indexes is not None:
+			self.indexes = indexes
+		else:
+			self.indexes = []
 
 
 	# Just for type hinting... really need to figure out how to fix class
@@ -120,20 +127,36 @@ class Table:
 		for index, column in enumerate(columns):
 			column = column.strip()
 			column = column.strip(',')
-			print "Column: " + column
 
 			primaryKeyMatch = re.match("^(PRIMARY KEY \((?P<columns>.*)\))", column)
 			uniqueKeyMatch = re.match("^(UNIQUE KEY `(?P<key_name>.*?)` \((?P<columns>.*)\))", column)
 			keyMatch = re.match("^(KEY `(?P<key_name>.*?)` \((?P<columns>.*)\))", column)
 
 			if primaryKeyMatch is not None:
-				print primaryKeyMatch.group('columns')
+				indexColumns = self.columnStringsToObjects(Index.parseColumnNamesFromString(primaryKeyMatch.group('columns')))
+				self.indexes.append(Index('PRIMARY', 'PRIMARY', indexColumns))
 			elif uniqueKeyMatch is not None:
-				print uniqueKeyMatch.group('columns')
+				indexColumns = self.columnStringsToObjects(Index.parseColumnNamesFromString(uniqueKeyMatch.group('columns')))
+				self.indexes.append(Index('UNIQUE', uniqueKeyMatch.group('key_name'), indexColumns))
 			elif keyMatch is not None:
-				print keyMatch.group('columns')
+				indexColumns = self.columnStringsToObjects(Index.parseColumnNamesFromString(keyMatch.group('columns')))
+				self.indexes.append(Index('KEY', keyMatch.group('key_name'), indexColumns))
 			else:
 				self.columns.append(Column.fromString(column))
 
 		self.name = matches.group('name')
 		self.autoincrement = matches.group('autoincrement')
+
+	def columnStringsToObjects(self, columnsList):
+		columns = []
+		for column in columnsList:
+			columns.append(self.getColumnByName(column))
+
+		return columns
+
+	def getColumnByName(self, name):
+		for column in self.columns:
+			if column.name == name:
+				return column
+
+		return None
