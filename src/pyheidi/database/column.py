@@ -74,7 +74,6 @@ class Column:
 
 	@staticmethod
 	def fromString(columnString):
-		print columnString
 		columnPattern = re.compile('`(?P<name>.+)` (?P<datatype>[a-z]+)(\((?P<length>\d+)\))?( )?(?P<unsigned>unsigned)?( )?(?P<zerofill>zerofill)?( )?(?P<allows_null>NOT NULL)?( )?(DEFAULT \'?(?P<default>[a-z0-9]+)\'?)?( )?(?P<autoincrement>AUTO_INCREMENT)?',
 				re.IGNORECASE | re.DOTALL)
 		matches = columnPattern.match(columnString)

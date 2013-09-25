@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Mon Aug 26 22:41:31 2013
+# Created: Tue Sep 24 21:46:35 2013
 #      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
@@ -173,6 +173,7 @@ class Ui_MainWindow(object):
         self.tableTabs = QtGui.QTabWidget(self.splitter_3)
         self.tableTabs.setStyleSheet(_fromUtf8("QPushButton {\n"
 "    padding: 0px;\n"
+"    text-align: left;\n"
 "}"))
         self.tableTabs.setObjectName(_fromUtf8("tableTabs"))
         self.tableTabsBasic = QtGui.QWidget()
@@ -382,7 +383,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.splitter_2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1218, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1218, 25))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -411,7 +412,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.twMachineTabs.setCurrentIndex(2)
         self.processListTab.setCurrentIndex(0)
-        self.tableTabs.setCurrentIndex(1)
+        self.tableTabs.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -475,8 +476,8 @@ class Ui_MainWindow(object):
         self.label_4.setText(_translate("MainWindow", "Auto increment:", None))
         self.label_5.setText(_translate("MainWindow", "Default collation:", None))
         self.tableTabs.setTabText(self.tableTabs.indexOf(self.tableTabsOptions), _translate("MainWindow", "Options", None))
-        self.addColumnButton_2.setText(_translate("MainWindow", "Add Column", None))
-        self.removeColumnButton_2.setText(_translate("MainWindow", "Remove Column", None))
+        self.addColumnButton_2.setText(_translate("MainWindow", "Add", None))
+        self.removeColumnButton_2.setText(_translate("MainWindow", "Remove", None))
         self.pushButton.setText(_translate("MainWindow", "Clear", None))
         self.moveColumnUpButton_2.setText(_translate("MainWindow", "Up", None))
         self.moveColumnDownButton_2.setText(_translate("MainWindow", "Down", None))

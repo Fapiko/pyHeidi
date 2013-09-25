@@ -104,23 +104,36 @@ class Table:
 				(self.database.name, self.name))
 
 		for row in cursor:
-			for column in self.parseCreateTableString(row['Create Table']):
-				self.columns.append(Column.fromString(column))
+			self.parseCreateTableString(row['Create Table'])
 
 	def parseCreateTableString(self, createTableString):
-		createTablePattern = re.compile('CREATE TABLE `(?P<name>[a-z_]+)` \((?P<columns>.*?)(PRIMARY KEY .*\n)?\) ENGINE=(?P<engine>[a-z]+) (AUTO_INCREMENT=(?P<autoincrement>\d+) )?DEFAULT CHARSET=(?P<charset>[a-z\d]+)',
+		createTablePattern = re.compile('CREATE TABLE `(?P<name>[a-z_]+)` \((?P<columns>.*?)\) ENGINE=(?P<engine>[a-z]+) (AUTO_INCREMENT=(?P<autoincrement>\d+) )?DEFAULT CHARSET=(?P<charset>[a-z\d]+)',
 				re.IGNORECASE | re.DOTALL)
 		matches = createTablePattern.match(createTableString)
 
 		if matches is None:
 			print "Error:\n" + createTableString
 
+		# print matches.group('primary_key');
+
 		columns = matches.group('columns').strip().split("\n")
 		for index, column in enumerate(columns):
 			column = column.strip()
-			columns[index] = column.strip(',')
+			column = column.strip(',')
+			print "Column: " + column
+
+			primaryKeyMatch = re.match("^(PRIMARY KEY \((?P<columns>.*)\))", column)
+			uniqueKeyMatch = re.match("^(UNIQUE KEY `(?P<key_name>.*?)` \((?P<columns>.*)\))", column)
+			keyMatch = re.match("^(KEY `(?P<key_name>.*?)` \((?P<columns>.*)\))", column)
+
+			if primaryKeyMatch is not None:
+				print primaryKeyMatch.group('columns')
+			elif uniqueKeyMatch is not None:
+				print uniqueKeyMatch.group('columns')
+			elif keyMatch is not None:
+				print keyMatch.group('columns')
+			else:
+				self.columns.append(Column.fromString(column))
 
 		self.name = matches.group('name')
 		self.autoincrement = matches.group('autoincrement')
-
-		return columns

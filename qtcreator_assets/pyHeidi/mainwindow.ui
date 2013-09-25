@@ -353,10 +353,11 @@
              <property name="styleSheet">
               <string notr="true">QPushButton {
 	padding: 0px;
+	text-align: left;
 }</string>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>2</number>
              </property>
              <widget class="QWidget" name="tableTabsBasic">
               <attribute name="icon">
@@ -403,7 +404,7 @@
              </widget>
              <widget class="QWidget" name="tableTabsOptions">
               <attribute name="icon">
-               <iconset>
+               <iconset resource="resources.qrc">
                 <normaloff>:/icons/resources/icons/wrench.png</normaloff>:/icons/resources/icons/wrench.png</iconset>
               </attribute>
               <attribute name="title">
@@ -451,7 +452,7 @@
              </widget>
              <widget class="QWidget" name="tableTabsIndexes">
               <attribute name="icon">
-               <iconset>
+               <iconset resource="resources.qrc">
                 <normaloff>:/icons/resources/icons/lightning.png</normaloff>:/icons/resources/icons/lightning.png</iconset>
               </attribute>
               <attribute name="title">
@@ -466,7 +467,7 @@
                     <string notr="true"/>
                    </property>
                    <property name="text">
-                    <string>Add Column</string>
+                    <string>Add</string>
                    </property>
                    <property name="icon">
                     <iconset resource="resources.qrc">
@@ -483,7 +484,7 @@
                     <bool>false</bool>
                    </property>
                    <property name="text">
-                    <string>Remove Column</string>
+                    <string>Remove</string>
                    </property>
                    <property name="icon">
                     <iconset resource="resources.qrc">
@@ -500,7 +501,7 @@
                     <string>Clear</string>
                    </property>
                    <property name="icon">
-                    <iconset>
+                    <iconset resource="resources.qrc">
                      <normaloff>:/icons/resources/icons/cross.png</normaloff>:/icons/resources/icons/cross.png</iconset>
                    </property>
                    <property name="flat">
@@ -815,7 +816,7 @@
      <x>0</x>
      <y>0</y>
      <width>1218</width>
-     <height>23</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
