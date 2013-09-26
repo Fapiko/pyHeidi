@@ -155,8 +155,6 @@ class MainApplicationWindow(QMainWindow):
 		dbInfoTableRegex = re.compile("^databaseinfotable\.[0-7]\.width")
 		splitter2SizesRegex = re.compile("^splitter_2\.[0-7]")
 		for row in cursor:
-			print row['name']
-
 			if row['name'] == 'mainwindow.width':
 				mainWindowWidth = int(row['value'])
 			elif row['name'] == 'mainwindow.height':

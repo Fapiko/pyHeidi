@@ -121,8 +121,6 @@ class Table:
 		if matches is None:
 			print "Error:\n" + createTableString
 
-		# print matches.group('primary_key');
-
 		columns = matches.group('columns').strip().split("\n")
 		for index, column in enumerate(columns):
 			column = column.strip()
