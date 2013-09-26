@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Wed Sep 25 21:03:30 2013
+# Created: Wed Sep 25 21:43:25 2013
 #      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
@@ -282,6 +282,17 @@ class Ui_MainWindow(object):
         icon12 = QtGui.QIcon()
         icon12.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/resources/icons/lightning.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.tableTabs.addTab(self.tableTabsIndexes, icon12, _fromUtf8(""))
+        self.createCode = QtGui.QWidget()
+        self.createCode.setObjectName(_fromUtf8("createCode"))
+        self.horizontalLayout_6 = QtGui.QHBoxLayout(self.createCode)
+        self.horizontalLayout_6.setObjectName(_fromUtf8("horizontalLayout_6"))
+        self.txtCreateCode = QtGui.QPlainTextEdit(self.createCode)
+        self.txtCreateCode.setTabStopWidth(20)
+        self.txtCreateCode.setObjectName(_fromUtf8("txtCreateCode"))
+        self.horizontalLayout_6.addWidget(self.txtCreateCode)
+        icon13 = QtGui.QIcon()
+        icon13.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/resources/icons/page_white_gear.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.tableTabs.addTab(self.createCode, icon13, _fromUtf8(""))
         self.layoutWidget = QtGui.QWidget(self.splitter_3)
         self.layoutWidget.setObjectName(_fromUtf8("layoutWidget"))
         self.verticalLayout_8 = QtGui.QVBoxLayout(self.layoutWidget)
@@ -399,9 +410,9 @@ class Ui_MainWindow(object):
         self.actionExit = QtGui.QAction(MainWindow)
         self.actionExit.setObjectName(_fromUtf8("actionExit"))
         self.actionRefresh = QtGui.QAction(MainWindow)
-        icon13 = QtGui.QIcon()
-        icon13.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/resources/icons/arrow_refresh.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.actionRefresh.setIcon(icon13)
+        icon14 = QtGui.QIcon()
+        icon14.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/resources/icons/arrow_refresh.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionRefresh.setIcon(icon14)
         self.actionRefresh.setObjectName(_fromUtf8("actionRefresh"))
         self.menuFile.addAction(self.actionSession_Manager)
         self.menuFile.addSeparator()
@@ -412,7 +423,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.twMachineTabs.setCurrentIndex(2)
         self.processListTab.setCurrentIndex(0)
-        self.tableTabs.setCurrentIndex(2)
+        self.tableTabs.setCurrentIndex(3)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -483,6 +494,7 @@ class Ui_MainWindow(object):
         self.moveColumnDownButton_2.setText(_translate("MainWindow", "Down", None))
         self.indexes.headerItem().setText(1, _translate("MainWindow", "Type / Length", None))
         self.tableTabs.setTabText(self.tableTabs.indexOf(self.tableTabsIndexes), _translate("MainWindow", "Indexes", None))
+        self.tableTabs.setTabText(self.tableTabs.indexOf(self.createCode), _translate("MainWindow", "CREATE code", None))
         self.label.setText(_translate("MainWindow", "Columns:", None))
         self.addColumnButton.setText(_translate("MainWindow", "Add Column", None))
         self.removeColumnButton.setText(_translate("MainWindow", "Remove Column", None))

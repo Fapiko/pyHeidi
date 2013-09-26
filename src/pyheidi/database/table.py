@@ -86,6 +86,9 @@ class Table:
 		for column in self.columns:
 			columnsCombined += "\t%s,\n" % column
 
+		for index in self.indexes:
+			columnsCombined += "\t%s,\n" % str(index)
+
 		columnsCombined = columnsCombined[:-2]
 
 		return "(\n%s\n)" % columnsCombined
@@ -93,6 +96,11 @@ class Table:
 	def getCreateTable(self):
 		createString = "CREATE TABLE `%s` %s\nCOLLATE='%s'\nENGINE=%s" % (
 			self.name, self.getColumnString(), 'utf8_general_ci', 'InnoDB')
+
+		if self.autoincrement is not None:
+			createString += "\nAUTO_INCREMENT=%s" % self.autoincrement
+
+		createString += ';'
 
 		return createString
 

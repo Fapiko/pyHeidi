@@ -357,7 +357,7 @@
 }</string>
              </property>
              <property name="currentIndex">
-              <number>2</number>
+              <number>3</number>
              </property>
              <widget class="QWidget" name="tableTabsBasic">
               <attribute name="icon">
@@ -570,6 +570,24 @@
                    <string>Type / Length</string>
                   </property>
                  </column>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="createCode">
+              <attribute name="icon">
+               <iconset resource="resources.qrc">
+                <normaloff>:/icons/resources/icons/page_white_gear.png</normaloff>:/icons/resources/icons/page_white_gear.png</iconset>
+              </attribute>
+              <attribute name="title">
+               <string>CREATE code</string>
+              </attribute>
+              <layout class="QHBoxLayout" name="horizontalLayout_6">
+               <item>
+                <widget class="QPlainTextEdit" name="txtCreateCode">
+                 <property name="tabStopWidth">
+                  <number>20</number>
+                 </property>
                 </widget>
                </item>
               </layout>

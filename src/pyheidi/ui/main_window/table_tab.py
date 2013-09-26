@@ -1,5 +1,5 @@
 from PyQt4.QtGui import QCheckBox, QComboBox, QIcon, QTableWidgetItem, QTableWidgetSelectionRange, QTreeWidgetItem
-from PyQt4.QtCore import Qt, QSize, QStringList
+from PyQt4.QtCore import Qt, QSize, QString, QStringList
 from database.table import Table
 from database.column import Column
 from ui.main_window.table_info_row import TableInfoRow
@@ -284,8 +284,14 @@ class TableTab:
 		self.setAutoincrementValue(table.autoincrement)
 		self.setDefaultCollationValue(table.defaultCollation)
 
+		indexTree = self.applicationWindow.mainWindow.indexes
+		for i in range(indexTree.topLevelItemCount()):
+			indexTree.takeTopLevelItem(0)
+
 		for index in table.indexes:
 			self.addIndex(index)
+
+		mainWindow.txtCreateCode.setPlainText(QString(str(table)))
 
 
 	def setDefaultCollationValue(self, collation):
