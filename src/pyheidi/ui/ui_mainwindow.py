@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Tue Sep 24 21:46:35 2013
+# Created: Wed Sep 25 21:03:30 2013
 #      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
@@ -275,10 +275,10 @@ class Ui_MainWindow(object):
         spacerItem1 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_7.addItem(spacerItem1)
         self.horizontalLayout_3.addLayout(self.verticalLayout_7)
-        self.treeWidget = QtGui.QTreeWidget(self.tableTabsIndexes)
-        self.treeWidget.setObjectName(_fromUtf8("treeWidget"))
-        self.treeWidget.headerItem().setText(0, _fromUtf8("Name"))
-        self.horizontalLayout_3.addWidget(self.treeWidget)
+        self.indexes = QtGui.QTreeWidget(self.tableTabsIndexes)
+        self.indexes.setObjectName(_fromUtf8("indexes"))
+        self.indexes.headerItem().setText(0, _fromUtf8("Name"))
+        self.horizontalLayout_3.addWidget(self.indexes)
         icon12 = QtGui.QIcon()
         icon12.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/resources/icons/lightning.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.tableTabs.addTab(self.tableTabsIndexes, icon12, _fromUtf8(""))
@@ -481,7 +481,7 @@ class Ui_MainWindow(object):
         self.pushButton.setText(_translate("MainWindow", "Clear", None))
         self.moveColumnUpButton_2.setText(_translate("MainWindow", "Up", None))
         self.moveColumnDownButton_2.setText(_translate("MainWindow", "Down", None))
-        self.treeWidget.headerItem().setText(1, _translate("MainWindow", "Type / Length", None))
+        self.indexes.headerItem().setText(1, _translate("MainWindow", "Type / Length", None))
         self.tableTabs.setTabText(self.tableTabs.indexOf(self.tableTabsIndexes), _translate("MainWindow", "Indexes", None))
         self.label.setText(_translate("MainWindow", "Columns:", None))
         self.addColumnButton.setText(_translate("MainWindow", "Add Column", None))

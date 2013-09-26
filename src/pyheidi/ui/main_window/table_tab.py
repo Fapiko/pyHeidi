@@ -1,4 +1,4 @@
-from PyQt4.QtGui import QCheckBox, QComboBox, QTableWidgetItem, QTableWidgetSelectionRange
+from PyQt4.QtGui import QCheckBox, QComboBox, QIcon, QTableWidgetItem, QTableWidgetSelectionRange, QTreeWidgetItem
 from PyQt4.QtCore import Qt, QSize, QStringList
 from database.table import Table
 from database.column import Column
@@ -284,6 +284,10 @@ class TableTab:
 		self.setAutoincrementValue(table.autoincrement)
 		self.setDefaultCollationValue(table.defaultCollation)
 
+		for index in table.indexes:
+			self.addIndex(index)
+
+
 	def setDefaultCollationValue(self, collation):
 		field = self.applicationWindow.mainWindow.tableOptionsDefaultCollation
 		field.setCurrentIndex(field.findText(collation))
@@ -293,3 +297,27 @@ class TableTab:
 			autoincrement = ''
 
 		self.applicationWindow.mainWindow.tableOptionsAutoIncrement.setText(autoincrement)
+
+	def addIndex(self, index):
+		indexTree = self.applicationWindow.mainWindow.indexes
+
+		if index.type == 'PRIMARY':
+			name = 'PRIMARY KEY'
+		else:
+			name = index.name
+
+		indexItem = QTreeWidgetItem()
+		indexItem.setIcon(0, QIcon('../resources/icons/key.png'))
+		indexItem.setText(0, name)
+		indexItem.setText(1, index.type)
+
+		for column in index.columns:
+			columnItem = QTreeWidgetItem()
+			columnItem.setIcon(0, QIcon('../resources/icons/bullet_black.png'))
+			columnItem.setText(0, column.name)
+			indexItem.addChild(columnItem)
+
+		indexTree.addTopLevelItem(indexItem)
+
+
+

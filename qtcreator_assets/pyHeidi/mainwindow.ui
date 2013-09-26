@@ -559,7 +559,7 @@
                 </layout>
                </item>
                <item>
-                <widget class="QTreeWidget" name="treeWidget">
+                <widget class="QTreeWidget" name="indexes">
                  <column>
                   <property name="text">
                    <string notr="true">Name</string>

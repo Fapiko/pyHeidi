@@ -155,6 +155,8 @@ class MainApplicationWindow(QMainWindow):
 		dbInfoTableRegex = re.compile("^databaseinfotable\.[0-7]\.width")
 		splitter2SizesRegex = re.compile("^splitter_2\.[0-7]")
 		for row in cursor:
+			print row['name']
+
 			if row['name'] == 'mainwindow.width':
 				mainWindowWidth = int(row['value'])
 			elif row['name'] == 'mainwindow.height':
@@ -163,6 +165,8 @@ class MainApplicationWindow(QMainWindow):
 				mainWindowX = int(row['value'])
 			elif row['name'] == 'mainwindow.y':
 				mainWindowY = int(row['value'])
+			elif row['name'] == 'tableIndexes.columnWidth':
+				self.mainWindow.indexes.setColumnWidth(0, int(row['value']))
 			elif dbInfoTableRegex.match(row['name']):
 				index = int(row['name'].split('.')[1])
 				self.mainWindow.databaseInfoTable.setColumnWidth(index, int(row['value']))
@@ -210,6 +214,9 @@ class MainApplicationWindow(QMainWindow):
 		sizes = self.mainWindow.splitter_2.sizes()
 		for i, size in enumerate(sizes):
 			cursor.execute("REPLACE INTO `settings` (name, value) VALUES ('splitter_2.%d', ?)" % i, [size])
+
+		indexSize = self.mainWindow.indexes.columnWidth(0)
+		cursor.execute("REPLACE INTO `settings` (name, value) VALUES ('tableIndexes.columnWidth', ?)", [indexSize])
 
 		self.configDb.commit()
 

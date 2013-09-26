@@ -30,7 +30,6 @@ class Index:
 			name = ''
 
 		columns = '`'
-		print self.columns
 		for column in self.columns:
 			columns += "%s`, " % column.name
 		columns = columns[:-2]
