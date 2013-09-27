@@ -1,22 +1,36 @@
 import MySQLdb
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import QIcon, QTreeWidgetItem
+from PyQt4.QtSql import QSqlDatabase, QSqlQuery
 from qthelpers.HeidiTreeWidgetItem import HeidiTreeWidgetItem
 from database import Database
 
 class DatabaseServer:
-	def __init__(self, name, connection, applicationWindow):
+#	def __init__(self, name, connection, applicationWindow):
+	def __init__(self, name, applicationWindow, hostname, username, password, port):
 		"""
 		@type name: str
 		@type connection: MySQLdb.Connection
 		@type applicationWindow: MainApplicationWindow
 		"""
 		self.name = name
-		self.connection = connection
+		self.hostname = hostname
+		self.username = username
+		self.password = password
+		self.port = port
 		self.applicationWindow = applicationWindow
 		self.databases = list()
 		self.currentDatabase = None
 		self.collations = list()
+
+		self.connection = MySQLdb.connect(host = hostname, user = username, passwd = password, port = port, cursorclass = MySQLdb.cursors.DictCursor)
+		db = QSqlDatabase.addDatabase('QMYSQL', name)
+		db.setHostName(hostname)
+		db.setUserName(username)
+		db.setPassword(password)
+		print db.open()
+
+		self.db = db
 
 		serverItem = HeidiTreeWidgetItem()
 		serverItem.setText(0, name)
@@ -35,17 +49,23 @@ class DatabaseServer:
 		@type params: list
 		"""
 		cursor = self.connection.cursor()
+		query = QSqlQuery()
+		query.prepare(args[0])
 		if len(args) == 1:
 			text = args[0]
-			cursor.execute(args[0])
 		elif len(args) == 2:
 			text = args[0] % args[1]
-			cursor.execute(args[0], args[1])
+
+			for value in args[1]:
+				query.addBindValue(value);
+
+		query.exec_()
+#			cursor.execute(args[0], args[1])
 
 		statusWindow = self.applicationWindow.mainWindow.txtStatus
 		statusWindow.append("%s;" % text)
 
-		return cursor
+		return query
 
 	def getDatabase(self, index):
 		"""
@@ -55,9 +75,11 @@ class DatabaseServer:
 		return self.databases(index)
 
 	def reloadDatabases(self):
-		cursor = self.execute('SHOW DATABASES')
-		for row in cursor:
-			self.addDatabase(row['Database'])
+		query = self.execute('SHOW DATABASES')
+		while query.next():
+			databaseIndex = query.record().indexOf('Database')
+			self.addDatabase(query.value(databaseIndex))
+			print query.value(databaseIndex)
 
 	def addDatabase(self, name):
 		"""

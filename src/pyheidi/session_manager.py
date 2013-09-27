@@ -271,9 +271,10 @@ class SessionManager(QtGui.QDialog):
 		applicationWindow = self.mainApplicationWindow
 
 		try:
-			dbConnection = MySQLdb.connect(host = session['hostname'], user = session['username'], passwd = session['password'],
-				port = session['port'], cursorclass = MySQLdb.cursors.DictCursor)
-			dbServer = DatabaseServer(session['name'], dbConnection, applicationWindow)
+#			dbConnection = MySQLdb.connect(host = session['hostname'], user = session['username'], passwd = session['password'],
+#				port = session['port'], cursorclass = MySQLdb.cursors.DictCursor)
+#			dbServer = DatabaseServer(session['name'], dbConnection, applicationWindow)
+			dbServer = DatabaseServer(session['name'], applicationWindow, session['hostname'], session['username'], session['password'], session['port'])
 			applicationWindow.show()
 			applicationWindow.addDbServer(dbServer)
 			self.hide()
